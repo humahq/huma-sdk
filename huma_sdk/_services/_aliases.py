@@ -13,5 +13,3 @@ class _Aliases(_Services):
     def fetch_aliases(self):
         aliases = self._fetch_aliases()
         return aliases
-
-    
