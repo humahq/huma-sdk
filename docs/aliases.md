@@ -1,6 +1,6 @@
 ### Aliases
 
-#### Setting up connection with a Service
+#### Setting up connection with Aliases
 
 ```python
 import huma_sdk

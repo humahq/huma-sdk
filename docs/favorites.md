@@ -1,6 +1,6 @@
 ### Favorites
 
-#### Setting up connection with a Service
+#### Setting up connection with Favorites
 
 ```python
 import huma_sdk

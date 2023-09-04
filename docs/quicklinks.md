@@ -1,6 +1,6 @@
 ### Quicklinks
 
-#### Setting up connection with a Service
+#### Setting up connection with Quicklinks
 
 ```python
 import huma_sdk

@@ -1,6 +1,6 @@
 ### Subscribes
 
-#### Setting up connection with a Service
+#### Setting up connection with Subscribes
 
 ```python
 import huma_sdk

@@ -1,6 +1,6 @@
 ### Questions
 
-#### Setting up Connection with a Service
+#### Setting up Connection with Questions
 
 ```python
 import huma_sdk

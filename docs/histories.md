@@ -1,6 +1,6 @@
 ### Histories
 
-#### Setting up connection with a Service
+#### Setting up connection with Histories
 
 ```python
 import huma_sdk

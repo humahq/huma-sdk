@@ -1,6 +1,6 @@
 ### Audits
 
-#### Setting up connection with a Service
+#### Setting up connection with Audits
 
 ```python
 import huma_sdk
