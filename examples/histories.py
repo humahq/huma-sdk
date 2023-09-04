@@ -61,7 +61,7 @@ def main():
     history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
 
     file_type = "<write your required file type>"
-    visual_type = "<write one of the possible types>"
+    visual_type = "<write one of the possible types>"   # visit documentation for more detailss
     history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
 
     conversion_id = "<write your conversion id"
