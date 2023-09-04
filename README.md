@@ -8,38 +8,38 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
 ## Modules
 
-- **Questions**: Interact with question-related functionalities.
+- [**Questions**](docs/questions.md): Interact with question-related functionalities.
   - `submit_question`: Submit a question for answer calculation.
   - `check_question_status`: Retrieve the status of an answer calculation.
   - `fetch_answer`: Retrieve the calculated answer.
 
-- **Histories**: Access historical question data.
+- [**Histories**](docs/histories.md): Access historical question data.
   - `fetch_history`: Retrieve a list of historical questions.
   - `fetch_history_data`: Retrieve detailed data for a historical question.
   - `submit_history_visual`: Initiate the transformation of historical question data into a file format.
   - `check_history_visual_status`: Check the status of the visual conversion process.
   - `fetch_history_visual_result`: Retrieve the outcome of a visual conversion.
 
-- **Subscribes**: Manage subscriptions to specific questions.
+- [**Subscribes**](docs/subscribes.md): Manage subscriptions to specific questions.
   - `fetch_subscribes`: Retrieve a list of subscribed questions.
   - `create_subscribe`: Subscribe to a question.
   - `fetch_subscribed_status`: Get the subscription status of a question.
   - `fetch_subscribe_data`: Retrieve detailed data for a subscribed question.
   - `delete_subscribe`: Unsubscribe from a question.
 
-- **Favorites**: Manage favorite questions.
+- [**Favorites**](docs/favorites.md): Manage favorite questions.
   - `fetch_favorites`: Retrieve a list of favorite questions.
   - `create_favorite`: Mark a question as a favorite.
   - `fetch_favorite_data`: Retrieve detailed data for a favorite question.
   - `delete_favorite`: Remove a question from favorites.
 
-- **Quicklinks**: Access categorized quicklinks for question submission.
+- [**Quicklinks**](docs/quicklinks.md): Access categorized quicklinks for question submission.
   - `fetch_quicklinks`: Enables users to retrieve categorized quicklinks, which are question titles that users can utilize.
 
-- **Audits**: Retrieve audit trail logs.
+- [**Audits**](docs/audits.md): Retrieve audit trail logs.
   - `fetch_audits`: Retrieve audit trail logs.
 
-- **Aliases**: Manage aliases for rules.
+- [**Aliases**](docs/aliases.md): Manage aliases for rules.
   - `fetch_aliases`: Retrieve aliases.
 
 ## Installation
