@@ -3,7 +3,7 @@
 #### Setting up Connection with a Service
 
 ```python
-import huma-sdk
+import huma_sdk
 self.questions_client = huma_sdk.session(service_name="Questions")
 ```
 
