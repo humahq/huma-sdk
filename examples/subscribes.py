@@ -28,9 +28,9 @@ class HumaSDKSubscribesClient:
         except Exception as e:
             self.handle_exception(e)
 
-    def fetch_subscribe_data(self, subscribed_id: str=""):
+    def fetch_subscribe_data(self, subscribed_id: str="",page: int=1, limit: int=50, type:str=""):
         try:
-            subscribe = self.subscribes_client.fetch_subscribe_data(subscribed_id)
+            subscribe = self.subscribes_client.fetch_subscribe_data(subscribed_id,page=page,limit=limit,type=type)
             print(subscribe)
         except Exception as e:
             self.handle_exception(e)

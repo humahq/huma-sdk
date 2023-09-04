@@ -13,7 +13,7 @@ self.questions_client = huma_sdk.session(service_name="Questions")
 - **Parameters**:
   - `question`:A string representing the question you want to ask.
   - `commands`(optional): An array of reserved phrases that instruct the server on how to process the question. (visit documentation for more details)
- 
+
 - **Example Usage**:
 
 ```python
@@ -26,7 +26,7 @@ print("submission_status:", submission_status)
 - **Description**: This Function retrieves the status of the answer calculation process using the ticket number.
 - **Parameters**:
   - `ticket_number`: A unique identifier associated with a specific answer calculation process, returned by submit_question function.
- 
+
 - **Example Usage**:
 
 ```python
@@ -41,7 +41,7 @@ print("calculation_status:", calculation_status)
   - `ticket_number`: A unique identifier associated with a specific answer calculation process, returned by submit_question function.
   - `page`(optional): It represents the requested page number in pagination.
   - `limit`(optional): It represents the maximum number of items to be included per page
- 
+
 - **Example Usage**:
 
 ```python
