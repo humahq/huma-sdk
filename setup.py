@@ -21,7 +21,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'requests',
-        'bson'
+        'bson',
+        'nose2'
     ],
     license='Proprietary',
     keywords='',

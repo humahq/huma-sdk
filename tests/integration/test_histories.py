@@ -4,13 +4,11 @@ import os
 import random
 from bson import ObjectId
 import time
-from huma_sdk.utils._log_utils import get_logger
 
 
 class TestHistoriesClientIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.logger = get_logger(__name__)
         self.file_type = "pdf"
         self.expected_history_object_keys = ('type', "question", "ticket_number", "possible_types", "type", "thumbnail")
         self.expected_answer_keys = ('data', 'type')

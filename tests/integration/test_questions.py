@@ -3,13 +3,11 @@ import huma_sdk
 import os
 from bson import ObjectId
 import time
-from huma_sdk.utils._log_utils import get_logger
 
 
 class TestQuestionsClientIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.logger = get_logger(__name__)
         self.question = "Top sponsors in nsclc"
         self.commands = []
         self.page, self.limit = 1, 20
@@ -57,29 +55,22 @@ class TestQuestionsClientIntegration(unittest.TestCase):
                 self.assertIn(key, answer)
 
     def fetch_answer(self):
-        self.logger.info('Initializing Test:  fetch_answer')
         result = self.questions_client.fetch_answer(ticket_number=self.ticket_number, page=self.page, limit=self.limit)
         self.assert_answer(result)
-        self.logger.info('Completed Test:  fetch_answer')
 
     def check_question_status(self, question_status):
-        self.logger.info('Initializing Test:  check_question_status')
         while question_status not in ('succeeded', "rejected"):
-            self.logger.info(f'Processing Test:  check_question_status, waiting for status "{question_status}" to get succeeded or rejected')
             time.sleep(5)
             result = self.questions_client.check_question_status(ticket_number=self.ticket_number)
             self.assert_question_status_result(result)
             question_status = result['question_status']
 
-        self.logger.info('Completed Test:  check_question_status')
         return question_status
 
     def submit_question(self):
-        self.logger.info('Initializing Test:  submit_question')
         result = self.questions_client.submit_question(question=self.question, commands=self.commands)
         self.assert_submission_result(result)
         self.ticket_number = result['ticket_number']
-        self.logger.info('Completed Test:  submit_question')
         return result['question_status']
 
     def test_questions_success(self):
