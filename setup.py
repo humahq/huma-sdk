@@ -21,6 +21,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'requests',
+        'bson'
     ],
     license='Proprietary',
     keywords='',

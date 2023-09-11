@@ -25,8 +25,8 @@ class _Questions(_Services):
         submission_status = self._submit_question(**payload)
         return submission_status
 
-    def check_question_status(self, *args):
-        question_status = self._check_question_status(*args)
+    def check_question_status(self, *args, **kwargs):
+        question_status = self._check_question_status(*args, **kwargs)
         return question_status
 
     def fetch_answer(self, ticket_number: str=None, page: int=1, limit: int=50):

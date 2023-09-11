@@ -41,7 +41,7 @@ def main():
 
     # Example usage
     question = "<write your question here>"
-    commands = []  # write your required commands, visit documentation for more details
+    commands = []  # write your required commands visit documentation for more details
     huma_client.submit_question(question=question, commands=commands)
 
     ticket_number = "<write your ticket number>"

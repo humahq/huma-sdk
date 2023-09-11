@@ -45,10 +45,10 @@ class _Subscribes(_Services):
         subscribe = self._fetch_subscribe_data(subscribed_id, **params)
         return subscribe
     
-    def delete_subscribe(self, *args):
-        subscribe = self._delete_subscribe(*args)
+    def delete_subscribe(self, *args, **kwargs):
+        subscribe = self._delete_subscribe(*args, **kwargs)
         return subscribe
     
-    def fetch_subscribed_status(self, *args):
-        subscribe = self._fetch_subscribed_status(*args)
+    def fetch_subscribed_status(self, *args, **kwargs):
+        subscribe = self._fetch_subscribed_status(*args, **kwargs)
         return subscribe
