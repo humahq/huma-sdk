@@ -1,6 +1,6 @@
 from huma_sdk._services import _aliases, _audits, _quicklinks, _questions, _histories, _favorites, _subscribes
 
-AVAILABLE_SERVICES = ("Quicklinks", "Aliases", "Audits", "Questions", "Histories", "Favorites", "Subscribes")
+AVAILABLE_SERVICES = ("Quicklinks", "Aliases", "Audits", "Questions", "Histories", "Favorites", "Subscriptions")
 
 SERVICE_MAPPINGS = {
     "Quicklinks": _quicklinks._Quicklinks,
@@ -9,5 +9,5 @@ SERVICE_MAPPINGS = {
     "Questions": _questions._Questions,
     "Histories": _histories._Histories,
     "Favorites": _favorites._Favorites,
-    "Subscribes": _subscribes._Subscribes
+    "Subscriptions": _subscribes._Subscription
 }

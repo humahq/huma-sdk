@@ -26,6 +26,7 @@ instance/
 .webassets-cache
 
 /local
+env
 debugger.py
 debug.json
 res.json

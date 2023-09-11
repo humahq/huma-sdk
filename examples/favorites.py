@@ -49,7 +49,7 @@ def main():
     # Example usage
     favorites_client.fetch_favorites(page=1, limit=50, sort_by=-1, order_by="", question="")
     
-    ticket_number = "<write your ticket number>"
+    ticket_number = "64c21e0f00565255da8c73e3"
     favorites_client.create_favorite(ticket_number=ticket_number)
 
     type = "<write one of the possible types>" # visit documentation for more details
