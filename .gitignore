@@ -1,0 +1,42 @@
+# Editor config
+#.vscode
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.egg-info/
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+/local
+env
+debugger.py
+debug.json
+res.json
+debug_utterance.py
+output.py
+output.json
+generate_test_suggestions.py
+.DS_Store
+**build/
+
+.env
+
+.vscode/settings.json
