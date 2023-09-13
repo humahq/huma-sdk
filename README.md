@@ -42,14 +42,5 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 - [**Aliases**](docs/aliases.md): Manage aliases for rules.
   - `fetch_aliases`: Retrieve aliases.
 
-## Installation
-
-TODO: Add installation instructions.
-
-## Getting Started
-
-TODO: Provide information on how to get started with the SDK.
-
-## Environment
 
 Before you start, make sure you have created a `.env` file from `sample.env` and update it with your actual credentials.
