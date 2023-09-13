@@ -20,12 +20,12 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
   - `check_history_visual_status`: Check the status of the visual conversion process.
   - `fetch_history_visual_result`: Retrieve the outcome of a visual conversion.
 
-- [**Subscribes**](docs/subscribes.md): Manage subscriptions to specific questions.
-  - `fetch_subscribes`: Retrieve a list of subscribed questions.
-  - `create_subscribe`: Subscribe to a question.
-  - `fetch_subscribed_status`: Get the subscription status of a question.
-  - `fetch_subscribe_data`: Retrieve detailed data for a subscribed question.
-  - `delete_subscribe`: Unsubscribe from a question.
+- [**Subscriptions**](docs/subscriptions.md): Manage subscriptions to specific questions.
+  - `fetch_subscriptions`: Retrieve a list of subscribed questions.
+  - `create_subscription`: Subscribe to a question.
+  - `fetch_subscription_status`: Get the subscription status of a question.
+  - `fetch_subscription_data`: Retrieve detailed data for a subscribed question.
+  - `delete_subscription`: Unsubscribe from a question.
 
 - [**Favorites**](docs/favorites.md): Manage favorite questions.
   - `fetch_favorites`: Retrieve a list of favorite questions.

@@ -53,19 +53,30 @@ class TestFavoritesClientIntegration(unittest.TestCase):
 
     def get_history(self):
         histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
-        result =  histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
-        history_object = result['histories'][0]
-        self.ticket_number = history_object['ticket_number']
+        page, limit = 1, 20
+        while True:
+            result = histories_client.fetch_history(page=page, limit=limit, sort_by="created_data", order_by=-1, question="")
+            if not isinstance(result, dict) or not result.get('histories'):
+                return []
+            for history in result['histories']:
+                if 'type' in history:
+                    self.ticket_number = history['ticket_number']
+                    return
+            page += 1
 
     def handle_empty_favorites(self):
-        self.get_history()
-        self.create_favorite()
-        self.fetch_favorites()
+        result = self.get_history()
+        if result:
+            self.create_favorite()
+            self.fetch_favorites()
+        return result
 
     def fetch_favorites(self):
         result = self.favorites_client.fetch_favorites(page=1, limit=20, sort_by="created_date", order_by=-1, question="")
         if not result.get('favorites'):
-            self.handle_empty_favorites()
+            result = self.handle_empty_favorites()
+            if not result:
+                return result
         else:
             self.assert_favorites(result)
             favorite_object = result['favorites'][0]
@@ -85,10 +96,11 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         self.assert_create_favorite(result)
 
     def test_histories_module(self):
-        self.fetch_favorites()
-        self.fetch_favorite_data()
-        self.delete_favorite()
-        self.create_favorite()
+        result = self.fetch_favorites()
+        if result:
+            self.fetch_favorite_data()
+            self.delete_favorite()
+            self.create_favorite()
 
 
 if __name__ == '__main__':

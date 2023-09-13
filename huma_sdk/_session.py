@@ -1,7 +1,7 @@
 from huma_sdk._service_config import SERVICE_MAPPINGS, AVAILABLE_SERVICES
 from huma_sdk.exceptions import ResourceNotExistsError
 
-class _Session():
+class _Session:
     def __init__(self, *args, **kwargs):
         self.service_name = kwargs.get('service_name')
         self.available_services = AVAILABLE_SERVICES

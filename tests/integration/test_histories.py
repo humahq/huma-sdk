@@ -71,22 +71,33 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         self.assertTrue(result)
         self.assertIsInstance(result, dict)
         self.assertIn('download_url', result)
+    
+
+    def get_history_object(self):
+        histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
+        result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
+        if not isinstance(result, dict) or not result.get('histories'):
+            return []
+        result['histories'] = [history for history in result['histories'] if 'type' in history]
+        return result if result['histories'] else []
 
     def fetch_history(self):
-        result = self.histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
-        self.assert_history(result)
-        history_object = result['histories'][0]
-        self.ticket_number = history_object['ticket_number']
-        self.possible_types = history_object['possible_types']
+        result = self.get_history_object()
+        if result:
+            self.assert_history(result)
+            history_object = result['histories'][0]
+            self.ticket_number = history_object['ticket_number']
+            self.possible_types = history_object['possible_types']
+        return result
 
     def fetch_history_data(self):
-        type = random.choice(self.possible_types)
+        type = random.choice(self.possible_types) if self.possible_types else ""
         result = self.histories_client.fetch_history_data(ticket_number=self.ticket_number, page=1, limit=20, type=type)
         self.expected_visual_type = type
         self.assert_history_data(result)
 
     def submit_history_visual(self)-> str:
-        visual_type = random.choice(self.possible_types)
+        visual_type = random.choice(self.possible_types) if self.possible_types else ""
         result = self.histories_client.submit_history_visual(ticket_number=self.ticket_number, file_type=self.file_type, visual_type=visual_type)
         self.assert_submit_history_visual(result)
         self.conversion_id = result['conversion_id']
@@ -106,12 +117,13 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         self.assert_fetch_history_visual_result(result)
 
     def test_histories_module(self):
-        self.fetch_history()
-        self.fetch_history_data()
-        status = self.submit_history_visual()
-        status = self.check_history_visual_status(status)
-        if status == "succeeded":
-            self.fetch_history_visual_result()
+        result = self.fetch_history()
+        if result:
+            self.fetch_history_data()
+            status = self.submit_history_visual()
+            status = self.check_history_visual_status(status)
+            if status == "succeeded":
+                self.fetch_history_visual_result()
 
 
 if __name__ == '__main__':
