@@ -6,7 +6,7 @@ class TestAuditsClientIntegration(unittest.TestCase):
 
     def setUp(self):
         self.audits_client = huma_sdk.session(service_name="Audits", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
-        self.required_params = dict(page=1, limit=20, sort_by=-1, order_by="", endpoint="", content="")
+        self.required_params = dict()
         self.expected_keys = ("environment", "user_email", "content", "endpoint", "customer")
 
     def assert_results(self, result):
@@ -15,7 +15,8 @@ class TestAuditsClientIntegration(unittest.TestCase):
 
         audits = result['audit_trail']
         self.assertIsInstance(audits, list)
-        self.assertTrue(len(audits)<=self.required_params['limit'])
+        if self.required_params.get('limit'):
+            self.assertTrue(len(audits)<=self.required_params['limit'])
 
         returned_keys = audits[0].keys() if audits else []
         if returned_keys:

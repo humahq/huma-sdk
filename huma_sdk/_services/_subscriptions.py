@@ -1,12 +1,11 @@
 from huma_sdk._resources import _Services
 
 
-class _Subscription(_Services):
+class _Subscriptions(_Services):
     def __init__(self, *args, **kwargs):
-        kwargs['service_name'] = 'subscribes'
         super().__init__(*args, **kwargs)
 
-    def _fetch_subscription(self, **params):
+    def _fetch_subscriptions(self, **params):
         headers = {"Authorization": f"Bearer {self.api_secret_key}"}
         url = f"{self.api_url}/v1/subscription"
         return self._make_request(method="GET", url=url, headers=headers, params=params)
@@ -31,9 +30,9 @@ class _Subscription(_Services):
         url = f"{self.api_url}/v1/subscription/{question}/status"
         return self._make_request(method="GET", url=url, headers=headers)
 
-    def fetch_subscription(self, page: int=1, limit: int=20, sort_by: int=-1, order_by: str=None, question: str=None):
+    def fetch_subscriptions(self, page: int=1, limit: int=20, sort_by: int=-1, order_by: str=None, question: str=None):
         params = {"page": page, "limit": limit, "sort_by": sort_by, "order_by": order_by, "question": question}
-        subscription = self._fetch_subscription(**params)
+        subscription = self._fetch_subscriptions(**params)
         return subscription
 
     def create_subscription(self, ticket_number: str=None):

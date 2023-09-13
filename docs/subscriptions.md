@@ -1,13 +1,13 @@
-### Subscribes
+### Subscriptions
 
-#### Setting up connection with Subscribes
+#### Setting up connection with Subscriptions
 
 ```python
 import huma_sdk
-self.subscribes_client = huma_sdk.session(service_name="Subscription")
+self.subscriptions_client = huma_sdk.session(service_name="Subscriptions")
 ```
 
-#### Function 1: `fetch_subscription`
+#### Function 1: `fetch_subscriptions`
 
 - **Description**: This Function retrieves a list of questions that a user is currently subscribed to.
 - **Parameters**:
@@ -20,8 +20,8 @@ self.subscribes_client = huma_sdk.session(service_name="Subscription")
 - **Example Usage**:
 
 ```python
-subscription = self.subscribes_client.fetch_subscription(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
-print("subscription:", subscription)
+subscriptions = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
+print("subscription:", subscriptions)
 ```
 
 #### Function 2: `create_subscription`
@@ -33,7 +33,7 @@ print("subscription:", subscription)
 - **Example Usage**:
 
 ```python
-creation_status = self.subscribes_client.create_subscription(ticket_number="<write your ticket number>")
+creation_status = self.subscriptions_client.create_subscription(ticket_number="<write your ticket number>")
 print("creation_status:", creation_status)
 ```
 
@@ -46,7 +46,7 @@ print("creation_status:", creation_status)
 - **Example Usage**:
 
 ```python
-subscription_status = self.subscribes_client.fetch_subscription_status(question="<write your question>")
+subscription_status = self.subscriptions_client.fetch_subscription_status(question="<write your question>")
 print("subscription_status:", subscription_status)
 ```
 
@@ -62,7 +62,7 @@ print("subscription_status:", subscription_status)
 - **Example Usage**:
 
 ```python
-subscription_data = self.subscribes_client.fetch_subscription_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
+subscription_data = self.subscriptions_client.fetch_subscription_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
 print("subscription_data:", subscription_data)
 ```
 
@@ -75,5 +75,5 @@ print("subscription_data:", subscription_data)
 - **Example Usage**:
 
 ```python
-self.subscribes_client.delete_subscription(subscribed_id="<write subscribed_id of your question>")
+self.subscriptions_client.delete_subscription(subscribed_id="<write subscribed_id of your question>")
 ```
