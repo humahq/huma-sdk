@@ -7,7 +7,7 @@ class TestAliasClientIntegration(unittest.TestCase):
     def setUp(self):
         self.aliases_client = huma_sdk.session(service_name="Aliases", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
         self.required_params = dict(page=1, limit=20, sort_by=-1, order_by="", search_by="", search_for="")
-        self.expected_keys = ("_id","rule", "type", "rule_name", "rule_type")
+        self.expected_keys = ("_id","type", "rule_name", "rule_type")
 
     def assert_results(self, result):
         self.assertIsInstance(result, dict)

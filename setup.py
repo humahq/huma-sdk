@@ -4,10 +4,9 @@ from setuptools import setup, find_packages
 
 # Pull in the package info
 package_name = 'huma_sdk'
-package = __import__(package_name)
-version = package.__version__
-author = package.__author__
-email = package.__email__
+author = 'Huma AI'
+email = 'support@humaai.com'
+version = '1.0'
 
 setup(
     name=package_name,
@@ -20,8 +19,13 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
+        'flask',
         'requests',
-        'bson'
+        'bson',
+        'nose2==0.13.0',
+        'nose2[coverage_plugin]',
+        'python-dotenv',
+        'pygments'
     ],
     license='Proprietary',
     keywords='',

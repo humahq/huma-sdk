@@ -40,12 +40,14 @@ def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "<write your question here>"
+    question = "Top Sponsors in NSCLC"
     commands = []  # write your required commands visit documentation for more details
     huma_client.submit_question(question=question, commands=commands)
 
     ticket_number = "<write your ticket number>"
     huma_client.check_question_status(ticket_number)
+
+    # Run once the check_question_status for '<ticket_number>' returns SUCCEEDED status otherwise this will return with NotFound error
     huma_client.fetch_answer(ticket_number, page=1, limit=10)
 
 if __name__ == "__main__":
