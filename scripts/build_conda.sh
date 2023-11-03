@@ -26,7 +26,7 @@ check_directory_name() {
 }
 
 # Example usage:
-directory_name="huma-sd*"
+directory_name="huma-sdk"
 check_directory_name "$directory_name"
 if [ $? -eq 0 ]; then
   continue

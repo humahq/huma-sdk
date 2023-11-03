@@ -44,9 +44,7 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
 ## Quickstart
 
-### Setup an Environment
-
-#### Mac or Linux
+### Setup and Activate Your Envionment for Mac or Linux
 
 Run the environment script from the root directory of the project:
 
@@ -55,7 +53,7 @@ Run the environment script from the root directory of the project:
 # follow the instructions
 ```
 
-### Setup and Activate Your Envionment
+Activate your conda environment
 
 ```bash
 conda activate huma-sdk
@@ -70,7 +68,7 @@ API_CALLBACK_AUTH= <write callback authorization token for webhook>
 FLASK_APP=examples/webhooks:main
 ```
 
-#### Access and Config Info Explanation
+### Access and Config Info Explanation
 
  - API_URL is the url of your environment proceeded by api.  It could also be `https://api.prod.009.huma.ai`
  - API_SECRET_KEY is what you get from the `Huma Platform > Hamburger menu > Developer Settings > API Tokens` when you create an API screen.
