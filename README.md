@@ -44,7 +44,7 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
 ## Quickstart
 
-### Setup and Activate Your Envionment for Mac or Linux
+### Setup and Activate a Python Envionment for Mac or Linux
 
 1. Run the environment script from the root directory of the project:
 
