@@ -46,38 +46,42 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
 ### Setup and Activate Your Envionment for Mac or Linux
 
-Run the environment script from the root directory of the project:
+1. Run the environment script from the root directory of the project:
 
-```bash
-/bin/bash scripts/build_conda.sh
-# follow the instructions
-```
+    ```bash
+    /bin/bash scripts/build_conda.sh
+    # follow the instructions
+    ```
 
-Activate your conda environment
+2. Activate your conda environment
 
-```bash
-conda activate huma-sdk
-```
+    ```bash
+    conda activate huma-sdk
+    ```
 
-Before you start, make sure you have created a `.env` file from `sample.env` and update it with your credentials.
+3. Create your .env
 
-```bash
-API_URL= https://api.<insert customer name>.huma.ai
-API_SECRET_KEY= <write your ai token>
-API_CALLBACK_AUTH= <write callback authorization token for webhook>
-FLASK_APP=examples/webhooks:main
-```
+    Before you start, create a `.env` file from `sample.env` and update it with your credentials.
 
-### Access and Config Info Explanation
+    ```bash
+    API_URL= https://api.<insert customer name>.huma.ai
+    API_SECRET_KEY= <write your ai token>
+    API_CALLBACK_AUTH= <write callback authorization token for webhook>
+    FLASK_APP=examples/webhooks:main
+    ```
 
- - API_URL is the url of your environment proceeded by api.  It could also be `https://api.prod.009.huma.ai`
- - API_SECRET_KEY is what you get from the `Huma Platform > Hamburger menu > Developer Settings > API Tokens` when you create an API screen.
- - API_CALLBACK_AUTH is an authorization code that you provide when you register a webhook in `Huma Platform > Hamburger menu > Developer Settings > Webhooks`
- - FLASK_APP=examples/webhooks:main is for the webhook client.  If you run the debugger profile form .vscode/launch.json in the VS Code debugger, this directs Flask where to start the code from.
+      Access and Config Info Explanation
 
-### Run the Questions Script
+      - API_URL is the url of your environment proceeded by api.  It could also be `https://api.prod.009.huma.ai`
+      - API_SECRET_KEY is what you get from the `Huma Platform > Hamburger menu > Developer Settings > API Tokens` when you create an API screen.
+      - API_CALLBACK_AUTH is an authorization code that you provide when you register a webhook in `Huma Platform > Hamburger menu > Developer Settings > Webhooks`
+      - FLASK_APP=examples/webhooks:main is for the webhook client.  If you run the debugger profile form .vscode/launch.json in the VS Code debugger, this directs Flask where to start the code from.
 
-```bash
-python examples/questions.py
-```
+4. Run the Questions Script (or another one)
+
+    ```bash
+    python examples/questions.py
+    ```
+
+5.  There is are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API endpoint which provides a ticket.
 
