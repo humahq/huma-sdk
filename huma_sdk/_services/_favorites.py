@@ -39,6 +39,6 @@ class _Favorites(_Services):
         favorite = self._fetch_favorite_data(ticket_number, **params)
         return favorite
     
-    def delete_favorite(self, *args, **kwargs):
-        favorite = self._delete_favorite(*args, **kwargs)
+    def delete_favorite(self, *args,**kwargs):
+        favorite = self._delete_favorite(*args,**kwargs)
         return favorite

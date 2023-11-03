@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.histories_client = huma_sdk.session(service_name="Histories")
+histories_client = huma_sdk.session(service_name="Histories")
 ```
 
 #### Function 1: `fetch_history`
@@ -20,7 +20,7 @@ self.histories_client = huma_sdk.session(service_name="Histories")
 - **Example Usage**:
 
 ```python
-history = self.histories_client.fetch_history(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
+history = histories_client.fetch_history(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
 print("history:", history)
 ```
 
@@ -28,7 +28,7 @@ print("history:", history)
 
 - **Description**: This Function enables users to retrieve a paginated list of their historical questions.
 - **Parameters**:
-  - `ticket_number`: A unique identifier associated with a specific answer calculation process.
+  - `ticket_number`: A unique identifier associated with a specific answer calculation process, you can find the ***ticket_number*** in response payload of `fetch_history`.
   - `page`(optional): It represents the requested page number in pagination.
   - `limit`(optional): It represents the maximum number of items to be included per page
   - `type`(optional): It represents the format of the particular visualisation type in which the response data is expected. This field accepts one of the possible_types associated with the ticket_number returned by the fetch_history. (visit documentation for more details)
@@ -36,7 +36,7 @@ print("history:", history)
 - **Example Usage**:
 
 ```python
-history = self.histories_client.fetch_history_data(ticket_number="<write your ticket number>", page=1, limit=20, type="<write required visual data type>")
+history = histories_client.fetch_history_data(ticket_number="<write your ticket number>", page=1, limit=20, type="<write required visual data type>")
 print("history:", history)
 ```
 
@@ -51,7 +51,7 @@ print("history:", history)
 - **Example Usage**:
 
 ```python
-submission_status = self.histories_client.submit_history_visual(ticket_number="<write your ticket number>", file_type="<write your required file type>",visual_type="<write your required visual type>")
+submission_status = histories_client.submit_history_visual(ticket_number="<write your ticket number>", file_type="<write your required file type>",visual_type="<write your required visual type>")
 print("submission_status:", submission_status)
 ```
 
@@ -64,7 +64,7 @@ print("submission_status:", submission_status)
 - **Example Usage**:
 
 ```python
-conversion_status = self.histories_client.check_history_visual_status(conversion_id="<write your conversion id>")
+conversion_status = histories_client.check_history_visual_status(conversion_id="<write conversion id returned from submit_history_visual>")
 print("conversion_status:", conversion_status)
 ```
 
@@ -77,6 +77,6 @@ print("conversion_status:", conversion_status)
 - **Example Usage**:
 
 ```python
-result = self.histories_client.fetch_history_visual_result(conversion_id="<write your conversion id>")
+result = histories_client.fetch_history_visual_result(conversion_id="<write conversion id returned from submit_history_visual>")
 print("result:", result)
 ```

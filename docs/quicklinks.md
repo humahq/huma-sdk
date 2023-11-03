@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.quicklinks_client = huma_sdk.session(service_name="Quicklinks")
+quicklinks_client = huma_sdk.session(service_name="Quicklinks")
 ```
 
 #### Function 1: `fetch_quicklinks`
@@ -14,6 +14,6 @@ self.quicklinks_client = huma_sdk.session(service_name="Quicklinks")
 - **Example Usage**:
 
 ```python
-quicklinks = self.quicklinks_client.fetch_quicklinks()
+quicklinks = quicklinks_client.fetch_quicklinks()
 print("quicklinks:", quicklinks)
 ```

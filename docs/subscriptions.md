@@ -1,13 +1,13 @@
-### Subscribes
+### Subscriptions
 
-#### Setting up connection with Subscribes
+#### Setting up connection with Subscriptions
 
 ```python
 import huma_sdk
-self.subscribes_client = huma_sdk.session(service_name="Subscribes")
+subscriptions_client = huma_sdk.session(service_name="Subscriptions")
 ```
 
-#### Function 1: `fetch_subscribes`
+#### Function 1: `fetch_subscriptions`
 
 - **Description**: This Function retrieves a list of questions that a user is currently subscribed to.
 - **Parameters**:
@@ -20,11 +20,11 @@ self.subscribes_client = huma_sdk.session(service_name="Subscribes")
 - **Example Usage**:
 
 ```python
-subscribes = self.subscribes_client.fetch_subscribes(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
-print("subscribes:", subscribes)
+subscriptions = subscriptions_client.fetch_subscriptions(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
+print("subscription:", subscriptions)
 ```
 
-#### Function 2: `create_subscribe`
+#### Function 2: `create_subscription`
 
 - **Description**: This Function allows users to subscribe to a specific question.
 - **Parameters**:
@@ -33,11 +33,11 @@ print("subscribes:", subscribes)
 - **Example Usage**:
 
 ```python
-creation_status = self.subscribes_client.create_subscribe(ticket_number="<write your ticket number>")
+creation_status = subscriptions_client.create_subscription(ticket_number="<write your ticket number>")
 print("creation_status:", creation_status)
 ```
 
-#### Function 3: `fetch_subscribed_status`
+#### Function 3: `fetch_subscription_status`
 
 - **Description**: This Function provides the subscription status of a particular question.
 - **Parameters**:
@@ -46,11 +46,11 @@ print("creation_status:", creation_status)
 - **Example Usage**:
 
 ```python
-subscription_status = self.subscribes_client.fetch_subscribed_status(question="<write your question>")
+subscription_status = subscriptions_client.fetch_subscription_status(question="<write your question>")
 print("subscription_status:", subscription_status)
 ```
 
-#### Function 4: `fetch_subscribe_data`
+#### Function 4: `fetch_subscription_data`
 
 - **Description**: This Function enables users to obtain detailed subscribed data for a specific question associated with a subscribed id.
 - **Parameters**:
@@ -62,11 +62,11 @@ print("subscription_status:", subscription_status)
 - **Example Usage**:
 
 ```python
-subscription_data = self.subscribes_client.fetch_subscribe_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
+subscription_data = subscriptions_client.fetch_subscription_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
 print("subscription_data:", subscription_data)
 ```
 
-#### Function 5: `delete_subscribe`
+#### Function 5: `delete_subscription`
 
 - **Description**: This Function allows users to unsubscribe from a specific question.
 - **Parameters**:
@@ -75,5 +75,5 @@ print("subscription_data:", subscription_data)
 - **Example Usage**:
 
 ```python
-self.subscribes_client.delete_subscribe(subscribed_id="<write subscribed_id of your question>")
+subscriptions_client.delete_subscription(subscribed_id="<write subscribed_id of your question>")
 ```
