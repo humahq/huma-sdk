@@ -1,4 +1,4 @@
-# HUMA-SDK - Python Package for HUMA-API
+# HUMA-SDK - A Python Package for the HUMA-API
 
 Huma-SDK is the Huma-API Software Development Kit (SDK) for Python, allowing developers to interact with the Huma-API services in their Python applications.
 
@@ -6,7 +6,7 @@ Huma-SDK is the Huma-API Software Development Kit (SDK) for Python, allowing dev
 
 This SDK simplifies the interaction with the HUMA-API, making it easy to integrate into your Python applications. It provides access to various modules, each with its set of functions for specific tasks.
 
-## Modules
+## SDK Modules
 
 - [**Questions**](docs/questions.md): Interact with question-related functionalities.
   - `submit_question`: Submit a question for answer calculation.
@@ -70,7 +70,7 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
     FLASK_APP=examples/webhooks:main
     ```
 
-      Access and Config Info Explanation
+      Access and Config Info Explanations
 
       - API_URL is the url of your environment proceeded by api.  It could also be `https://api.prod.009.huma.ai`
       - API_SECRET_KEY is what you get from the `Huma Platform > Hamburger menu > Developer Settings > API Tokens` when you create an API screen.
@@ -83,5 +83,5 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
     python examples/questions.py
     ```
 
-5.  There is are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API endpoint which provides a ticket.
+5.  There is are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
 
