@@ -83,5 +83,5 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
     python examples/questions.py
     ```
 
-5.  There is are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
+5.  There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
 
