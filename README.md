@@ -42,9 +42,11 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 - [**Aliases**](docs/aliases.md): Manage aliases for rules.
   - `fetch_aliases`: Retrieve aliases.
 
-## Setup an Environment
+## Quickstart
 
-### Mac or Linux
+### Setup an Environment
+
+#### Mac or Linux
 
 Run the environment script from the root directory of the project:
 
@@ -53,17 +55,31 @@ Run the environment script from the root directory of the project:
 # follow the instructions
 ```
 
-## Activate Your Envionment
+### Activate Your Envionment
 
 ```bash
 conda activate huma-sdk
 ```
 
-## Setup Access
+### Setup Access and Configuration
 
 Before you start, make sure you have created a `.env` file from `sample.env` and update it with your credentials.
 
-## Run the Questions Script
+```bash
+API_URL= https://api.<insert customer name>.huma.ai
+API_SECRET_KEY= <write your ai token>
+API_CALLBACK_AUTH= <write callback authorization token for webhook>
+FLASK_APP=examples/webhooks:main
+```
+
+#### Access and Config Info Explanation
+
+ - API_URL is the url of your environment proceeded by api.  It could also be `https://api.prod.009.huma.ai`
+ - API_SECRET_KEY is what you get from the `Huma Platform > Hamburger menu > Developer Settings > API Tokens` when you create an API screen.
+ - API_CALLBACK_AUTH is an authorization code that you provide when you register a webhook in `Huma Platform > Hamburger menu > Developer Settings > Webhooks`
+ - FLASK_APP=examples/webhooks:main is for the webhook client.  If you run the debugger profile form .vscode/launch.json in the VS Code debugger, this directs Flask where to start the code from.
+
+### Run the Questions Script
 
 ```bash
 python examples/questions.py
