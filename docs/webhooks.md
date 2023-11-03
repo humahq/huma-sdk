@@ -70,7 +70,6 @@ def question_answered_hook():
         ticket_number = payload.get("ticket_number")
         answer_payload = questions_client.fetch_answer(ticket_number=ticket_number)
         ## Add your custom logic here
-        # print(answer_payload['answer']['data'])
         # pprint.pprint(answer_payload['answer']['data'], indent=4)
         print(highlight(json.dumps(answer_payload, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         return jsonify({}), 200
