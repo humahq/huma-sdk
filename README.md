@@ -42,5 +42,30 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 - [**Aliases**](docs/aliases.md): Manage aliases for rules.
   - `fetch_aliases`: Retrieve aliases.
 
+## Setup an Environment
 
-Before you start, make sure you have created a `.env` file from `sample.env` and update it with your actual credentials.
+### Mac or Linux
+
+Run the environment script from the root directory of the project:
+
+```bash
+/bin/bash scripts/build_conda.sh
+# follow the instructions
+```
+
+## Activate Your Envionment
+
+```bash
+conda activate huma-sdk
+```
+
+## Setup Access
+
+Before you start, make sure you have created a `.env` file from `sample.env` and update it with your credentials.
+
+## Run the Questions Script
+
+```bash
+python examples/questions.py
+```
+
