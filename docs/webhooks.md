@@ -1,6 +1,6 @@
 ### Webhooks
 
-#### Creating a Webhook Client Using Our Function
+- ### Creating a Webhook Client Using Our Function
 
 With this approach, you can create a webhook client that listens for incoming webhook requests on a static endpoint, "/api/webhook-question-answered." The webhook payload, which contains the answer to a question, will be displayed in your terminal.
 
@@ -22,7 +22,7 @@ webhooks_client = huma_sdk.session(service_name="Webhooks")
 webhooks_client.activate_webhook_client(debug=True, port=5000)
 ```
 
-#### Creating Your Own Webhook Client
+- ### Creating Your Own Webhook Client
 
 To create your own custom webhook client in Python, you can use the following example code:
 

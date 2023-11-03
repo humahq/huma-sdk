@@ -49,8 +49,7 @@ answer = questions_client.fetch_answer(ticket_number="<write ticket number retur
 print("answer:", answer)
 ```
 
-
-#### Setting Up Webhook for Receiving Answers
+- ### Setting Up Webhook for Receiving Answers
 
 To receive answers via a webhook, you can use ngrok.com to create a publicly accessible endpoint that routes to your local code instance. Follow these steps to set up the webhook:
 
