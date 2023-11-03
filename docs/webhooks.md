@@ -1,6 +1,6 @@
 ## Webhooks
 
-### Prerequists for Receiving Webhook Callbacks
+### Setup for Receiving Webhook Callbacks
 
 To receive answers via a webhook locally, you can use ngrok.com to create a publicly accessible endpoint that routes to your local code instance. This is an alternative to setting up a publically facing server.
 
@@ -33,7 +33,7 @@ Follow these steps to set up the webhook client (for local use):
    - In the options box, put callback url as your ngrok url followed by the endpoint address.  So something like `https://xxxx-xx-xx-xx-xx.ngrok-free.app/api/webhook-question-answered`.  Also, put this in your .env file as the value for `API_URL`
    - In the resource box put `Questions`.
    - In the event box put `Computed`
-   - In the Authorization box put a made up secret code that you also put in your .env file as the value for the environment variable for `API_CALLBACK_AUTH`
+   - In the authorization box put a made up secret code that you also put in your .env file as the value for the environment variable for `API_CALLBACK_AUTH`
    - Set `FLASK_APP` to your webhooks code.  Something like `FLASK_APP=examples/webhooks:main` which points to the function `main` in the file `examples/webhooks.py`
   
 6. Trigger your webhook callback by [submitting a question](../examples/webhooks.py).
