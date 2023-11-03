@@ -55,13 +55,11 @@ Run the environment script from the root directory of the project:
 # follow the instructions
 ```
 
-### Activate Your Envionment
+### Setup and Activate Your Envionment
 
 ```bash
 conda activate huma-sdk
 ```
-
-### Setup Access and Configuration
 
 Before you start, make sure you have created a `.env` file from `sample.env` and update it with your credentials.
 
