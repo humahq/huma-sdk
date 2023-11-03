@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.subscriptions_client = huma_sdk.session(service_name="Subscriptions")
+subscriptions_client = huma_sdk.session(service_name="Subscriptions")
 ```
 
 #### Function 1: `fetch_subscriptions`
@@ -20,7 +20,7 @@ self.subscriptions_client = huma_sdk.session(service_name="Subscriptions")
 - **Example Usage**:
 
 ```python
-subscriptions = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
+subscriptions = subscriptions_client.fetch_subscriptions(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
 print("subscription:", subscriptions)
 ```
 
@@ -33,7 +33,7 @@ print("subscription:", subscriptions)
 - **Example Usage**:
 
 ```python
-creation_status = self.subscriptions_client.create_subscription(ticket_number="<write your ticket number>")
+creation_status = subscriptions_client.create_subscription(ticket_number="<write your ticket number>")
 print("creation_status:", creation_status)
 ```
 
@@ -46,7 +46,7 @@ print("creation_status:", creation_status)
 - **Example Usage**:
 
 ```python
-subscription_status = self.subscriptions_client.fetch_subscription_status(question="<write your question>")
+subscription_status = subscriptions_client.fetch_subscription_status(question="<write your question>")
 print("subscription_status:", subscription_status)
 ```
 
@@ -62,7 +62,7 @@ print("subscription_status:", subscription_status)
 - **Example Usage**:
 
 ```python
-subscription_data = self.subscriptions_client.fetch_subscription_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
+subscription_data = subscriptions_client.fetch_subscription_data(subscribed_id="<write subscribed_id of question>", page=1, limit=20, type="<write your required visual data type>")
 print("subscription_data:", subscription_data)
 ```
 
@@ -75,5 +75,5 @@ print("subscription_data:", subscription_data)
 - **Example Usage**:
 
 ```python
-self.subscriptions_client.delete_subscription(subscribed_id="<write subscribed_id of your question>")
+subscriptions_client.delete_subscription(subscribed_id="<write subscribed_id of your question>")
 ```

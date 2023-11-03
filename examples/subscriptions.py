@@ -14,9 +14,9 @@ class HumaSDKSubscribesClient:
         else:
             print("An unexpected error occurred:", exception)
 
-    def fetch_subscription(self, page: int=1, limit: int=50, sort_by: int=-1, order_by: str="", question: str=""):
+    def fetch_subscriptions(self, page: int=1, limit: int=50, sort_by: int=-1, order_by: str="", question: str=""):
         try:
-            subscription = self.subscribes_client.fetch_subscription(page=page, limit=limit, sort_by=sort_by, order_by=order_by, question=question)
+            subscription = self.subscribes_client.fetch_subscriptions(page=page, limit=limit, sort_by=sort_by, order_by=order_by, question=question)
             print(subscription)
         except Exception as e:
             self.handle_exception(e)
@@ -54,12 +54,12 @@ def main():
     subscribes_client = HumaSDKSubscribesClient()
 
     # Example usage
-    subscribes_client.fetch_subscription(page=1, limit=50, sort_by=-1, order_by="", question="")
+    subscribes_client.fetch_subscriptions(page=1, limit=50, sort_by=-1, order_by="", question="")
 
-    ticket_number = "64d340834dd3067ec7d3a8eb"
+    ticket_number = "<write your ticket number>"   # you can get it by asking new question or from your history or favorites questions
     subscribes_client.create_subscription(ticket_number=ticket_number)
 
-    subscribed_id = "6332d27a22e4200391f2c933"
+    subscribed_id = "write your subscribed id"
     type = "<write one of the possible types>"    # visit documentation for more details
     subscribes_client.fetch_subscription_data(subscribed_id, page=1, limit=20, type=type)
     subscribes_client.delete_subscription(subscribed_id)

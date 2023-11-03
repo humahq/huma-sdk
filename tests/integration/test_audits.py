@@ -6,7 +6,7 @@ class TestAuditsClientIntegration(unittest.TestCase):
 
     def setUp(self):
         self.audits_client = huma_sdk.session(service_name="Audits", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
-        self.required_params = dict()
+        self.required_params = dict(page=1, limit=20, endpoint="answer")
         self.expected_keys = ("environment", "user_email", "content", "endpoint", "customer")
 
     def assert_results(self, result):

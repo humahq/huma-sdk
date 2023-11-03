@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.favorites_client = huma_sdk.session(service_name="Favorites")
+favorites_client = huma_sdk.session(service_name="Favorites")
 ```
 
 #### Function 1: `fetch_favorites`
@@ -20,7 +20,7 @@ self.favorites_client = huma_sdk.session(service_name="Favorites")
 - **Example Usage**:
 
 ```python
-favorites = self.favorites_client.fetch_favorites(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
+favorites = favorites_client.fetch_favorites(page=1, limit=20, question="<write your keyword to search>", order_by="created_date", sort_by=-1)
 print("favorites:", favorites)
 ```
 
@@ -28,12 +28,12 @@ print("favorites:", favorites)
 
 - **Description**: This Function allows users to mark a question as favorite.
 - **Parameters**:
-  - `ticket_number`: A unique identifier associated with a specific answer calculation process.
+  - `ticket_number`: A unique identifier associated with a specific answer calculation process, you can find the ***ticket_number*** in response payload of `fetch_favorites`.
  
 - **Example Usage**:
 
 ```python
-creation_status = self.favorites_client.create_favorite(ticket_number="<write your ticket number>")
+creation_status = favorites_client.create_favorite(ticket_number="<write your ticket number>")
 print("creation_status:", creation_status)
 ```
 
@@ -49,7 +49,7 @@ print("creation_status:", creation_status)
 - **Example Usage**:
 
 ```python
-favorites_data = self.favorites_client.fetch_favorite_data(ticket_number="<write your ticket_number>", page=1, limit=20, type="<write your required visual data type>")
+favorites_data = favorites_client.fetch_favorite_data(ticket_number="<write your ticket_number>", page=1, limit=20, type="<write your required visual data type>")
 print("favorites_data:", favorites_data)
 ```
 
@@ -62,5 +62,5 @@ print("favorites_data:", favorites_data)
 - **Example Usage**:
 
 ```python
-self.favorites_client.delete_favorite(ticket_number="<write your ticket_number>")
+favorites_client.delete_favorite(ticket_number="<write your ticket_number>")
 ```

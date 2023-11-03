@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.aliases_client = huma_sdk.session(service_name="Aliases")
+aliases_client = huma_sdk.session(service_name="Aliases")
 ```
 
 #### Function 1: `fetch_aliases`
@@ -21,6 +21,6 @@ self.aliases_client = huma_sdk.session(service_name="Aliases")
 - **Example Usage**:
 
 ```python
-aliases = self.aliases_client.fetch_aliases(page=1, limit=20, sort_by=-1, order_by="created_date", search_for="", search_by="")
+aliases = aliases_client.fetch_aliases(page=1, limit=20, sort_by=-1, order_by="created_date", search_for="", search_by="")
 print("aliases:", aliases)
 ```
