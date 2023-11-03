@@ -4,7 +4,7 @@
 
 ```python
 import huma_sdk
-self.audits_client = huma_sdk.session(service_name="Audits")
+audits_client = huma_sdk.session(service_name="Audits")
 ```
 
 #### Function 1: `fetch_audits`
@@ -21,6 +21,6 @@ self.audits_client = huma_sdk.session(service_name="Audits")
 - **Example Usage**:
 
 ```python
-audits = self.audits_client.fetch_audits(page=1, limit=20, sort_by=-1, order_by="created_date", endpoint="<write name of the endpoint to search>", content="<write content to search>")
+audits = audits_client.fetch_audits(page=1, limit=20, sort_by=-1, order_by="created_date", endpoint="<write name of the endpoint to search>", content="<write content to search>")
 print("audits:", audits)
 ```

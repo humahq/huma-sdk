@@ -61,11 +61,13 @@ def main():
     history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
 
     file_type = "<write your required file type>"
-    visual_type = "<write one of the possible types>"   # visit documentation for more details
+    visual_type = "<write one of the possible types>"   # will be included in the response payload of 'fetch_history', visit documentation for more details  
     history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
 
     conversion_id = "<write your conversion id"
     history_client.check_history_visual_status(conversion_id)
+
+    # Run once the check_history_visual_status for '<conversion_id>' returns SUCCEEDED status otherwise this will return with NotFound error
     history_client.fetch_history_visual_result(conversion_id)
 
 if __name__ == "__main__":

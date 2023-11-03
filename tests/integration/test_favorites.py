@@ -95,7 +95,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         result = self.favorites_client.create_favorite(ticket_number=self.ticket_number)
         self.assert_create_favorite(result)
 
-    def test_histories_module(self):
+    def test_favorites_module(self):
         result = self.fetch_favorites()
         if result:
             self.fetch_favorite_data()
