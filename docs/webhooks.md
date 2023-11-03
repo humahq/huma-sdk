@@ -1,6 +1,6 @@
 ### Webhooks
 
-- ### Creating a Webhook Client Using Our Function
+- ### Creating a Webhook Client Using SDK
 
 With this approach, you can create a webhook client that listens for incoming webhook requests on a static endpoint, "/api/webhook-question-answered." The webhook payload, which contains the answer to a question, will be displayed in your terminal.
 
