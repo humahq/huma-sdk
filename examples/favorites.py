@@ -52,7 +52,7 @@ def main():
     ticket_number = "<write your ticket number>" # will be included in 'fetch_favorites'
     favorites_client.create_favorite(ticket_number=ticket_number)
 
-    type = "<write one of the possible types>" # will be included in resonse payload of 'fetch_favorites', visit documentation for more details
+    type: str = "<write one of the possible types>" # will be included in resonse payload of 'fetch_favorites', visit documentation for more details
     favorites_client.fetch_favorite_data(ticket_number, page=1, limit=10, type=type)
     favorites_client.delete_favorite(ticket_number)
 

@@ -42,6 +42,9 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 - [**Aliases**](docs/aliases.md): Manage aliases for rules.
   - `fetch_aliases`: Retrieve aliases.
 
+- [**Webhooks**](docs/webhooks.md): Managing the webhook callbacks.
+  - `activate_webhook_client`: Activate flask app on local environment for receiving webhook callbacks
+
 ## Quickstart
 
 ### Setup and Activate a Python Envionment for Mac or Linux
@@ -83,5 +86,5 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
     python examples/questions.py
     ```
 
-5.  There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
+5. There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
 

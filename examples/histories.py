@@ -1,4 +1,5 @@
 import huma_sdk
+import time
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
 
 
@@ -32,6 +33,7 @@ class HumaSDKHistoriesClient:
         try:
             submission_status = self.histories_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
             print(submission_status)
+            return submission_status
         except Exception as e:
             self.handle_exception(e)
 
@@ -39,6 +41,7 @@ class HumaSDKHistoriesClient:
         try:
             conversion_status = self.histories_client.check_history_visual_status(conversion_id)
             print(conversion_status)
+            return conversion_status
         except Exception as e:
             self.handle_exception(e)
 
@@ -46,6 +49,7 @@ class HumaSDKHistoriesClient:
         try:
             history_visual = self.histories_client.fetch_history_visual_result(conversion_id)
             print(history_visual)
+            return history_visual
         except Exception as e:
             self.handle_exception(e)
 
@@ -56,19 +60,39 @@ def main():
     # Example usage
     history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
 
-    ticket_number = "<write your ticket number>"
-    type = "<write one of the possible types>"    # visit documentation for more details
+    ticket_number: str = "<write your ticket number>"
+    type: str = "<write one of the possible types>"    # visit documentation for more details
     history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
 
-    file_type = "<write your required file type>"
-    visual_type = "<write one of the possible types>"   # will be included in the response payload of 'fetch_history', visit documentation for more details  
-    history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
+    file_type: str = "<write your required file type>"
+    visual_type: str = "<write one of the possible types>"   # will be included in the response payload of 'fetch_history', visit documentation for more details  
 
-    conversion_id = "<write your conversion id"
-    history_client.check_history_visual_status(conversion_id)
+    # Steps for getting download link of the history visual file
+    submission_status = history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
 
-    # Run once the check_history_visual_status for '<conversion_id>' returns SUCCEEDED status otherwise this will return with NotFound error
-    history_client.fetch_history_visual_result(conversion_id)
+    conversion_id = submission_status.get('conversion_id')
+    while True:
+        print(f"Checking Status of '{conversion_id}' conversion id")
+        history_visual_status = history_client.check_history_visual_status(conversion_id)
+
+        conversion_status = history_visual_status.get('status', '')
+        if conversion_status == 'succeeded':
+            print(f"Getting visual of answer with '{conversion_id}' conversion id")
+            result_response = history_client.fetch_history_visual_result(conversion_id)
+
+            with open(f'{conversion_id}_visual.json', 'w') as f:
+                json.dump(result_response, f, indent=4)
+
+            print(f'Copy the link from the result and paste in your favorite browser for downloading the visual file')
+            print(f"Result saved to {conversion_id}_visual.json")
+            break
+        elif conversion_status == 'rejected':
+            print(f'The history answer with "{conversion_id}" conversion id failed to process.')
+            break
+        else:
+            print(f'History answer with "{conversion_id}" conversion id is being processed, checking status in 5 seconds...')
+            time.sleep(5)
+
 
 if __name__ == "__main__":
     main()
