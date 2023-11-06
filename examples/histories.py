@@ -61,8 +61,8 @@ def main():
     # Example usage
     # history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
 
-    ticket_number: str = "6548846cbc6f0c08075a8962"
-    type: str = "bar_chart"    # visit documentation for more details
+    ticket_number: str = "<write your ticket number>"
+    type: str = "<write one of the possible types>"    # visit documentation for more details
     history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
 
     file_type: str = "ppt"

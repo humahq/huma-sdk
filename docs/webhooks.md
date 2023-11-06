@@ -44,9 +44,9 @@ You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05
 
 | Resource   | Event Name    | Description                                        |
 |------------|---------------|----------------------------------------------------|
-| Questions  | Computed      | This event is triggered when a question [computation](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual), whether successful or unsuccessful, occurs. When this event is triggered, it indicates that the system has processed the question and either successfully provided an answer or encountered an issue in doing so. |
-| Histories  | Visualized    | 	This event triggers when a [historical](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual) answer, whether successful or failed, is visualized. It retrieves visual representations of answers, such as PDF, CSV, or PPT, providing users access to historical information, regardless of the outcome.|
-| Subscriptions | AnswerUpdated | This event is triggered when there is an update to the answer of a question that a user has [subscribed](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
+| Questions  | [Computed](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)      |  When this event is triggered, it indicates that the system has processed the question and either successfully provided an answer or encountered an issue in doing so. |
+| Histories  | [Visualized](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)    |When this event is triggered, it retrieves visual representations of answers, such as PDFs, CSVs, or PPTs, in a JSON response that contains downloadable links. |
+| Subscriptions | [AnswerUpdated](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) | This event is triggered when there is an update to the answer of a question that a user has subscribed to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
 
 
 ### Create a Webhook Client Using SDK
