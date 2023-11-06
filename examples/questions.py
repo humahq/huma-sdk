@@ -1,5 +1,6 @@
 import huma_sdk
 import time
+import json
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
 
 
@@ -44,7 +45,7 @@ def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "<write your question>"
+    question = "Top sponsors in nsclc no answer cache"
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
@@ -52,7 +53,7 @@ def main():
     while True:
         print(f"Checking Status of '{ticket_number}' ticket number")
         status_response = huma_client.check_question_status(ticket_number=ticket_number)
-        
+
         question_status = status_response.get('question_status', '')
         if question_status == 'succeeded':
             print(f"Getting Result of Question with '{ticket_number}' ticket number")

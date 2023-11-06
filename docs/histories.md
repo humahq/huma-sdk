@@ -60,7 +60,7 @@ print("submission_status:", submission_status)
 - **Description**: This Function returns the current status of the history visual creation, allowing users to monitor the progress and take action when the status indicates completion.
 - **Parameters**:
   - `conversion_id`: It is a Unique reference id of the conversion process, returned by the `submit_history_visual`.
- 
+
 - **Example Usage**:
 
 ```python
@@ -73,10 +73,10 @@ print("conversion_status:", conversion_status)
 - **Description**: This Function empowers users to seamlessly obtain the outcome of a visual conversion job and access the converted file for download.
 - **Parameters**:
   - `conversion_id`: It is a Unique reference id of the conversion process, returned by the `submit_history_visual`.
- 
+
 - **Example Usage**:
 
 ```python
-result = histories_client.fetch_history_visual_result(conversion_id="<write conversion id returned from submit_history_visual>")
+result = histories_client.fetch_history_visual_result("<write conversion id returned from submit_history_visual>")
 print("result:", result)
 ```

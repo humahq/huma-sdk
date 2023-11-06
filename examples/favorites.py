@@ -48,8 +48,8 @@ def main():
 
     # Example usage
     favorites_client.fetch_favorites(page=1, limit=50, sort_by=-1, order_by="", question="")
-    
-    ticket_number = "<write your ticket number>" # will be included in 'fetch_favorites'
+
+    ticket_number = "6548846cbc6f0c08075a8962" # will be included in 'fetch_favorites'
     favorites_client.create_favorite(ticket_number=ticket_number)
 
     type: str = "<write one of the possible types>" # will be included in resonse payload of 'fetch_favorites', visit documentation for more details

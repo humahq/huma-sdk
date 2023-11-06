@@ -6,7 +6,6 @@ import huma_sdk
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import TerminalFormatter
-import pprint
 import json
 
 load_dotenv()
@@ -30,7 +29,7 @@ def question_answered_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -42,15 +41,12 @@ def question_answered_hook():
         payload = request.json
         ticket_number = payload.get("ticket_number")
         answer_payload = questions_client.fetch_answer(ticket_number=ticket_number)
-        # print(answer_payload['answer']['data'])
-        # pprint.pprint(answer_payload['answer']['data'], indent=4)
         print(highlight(json.dumps(answer_payload, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         return jsonify({}), 200
 
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
@@ -65,7 +61,7 @@ def history_visualized_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -76,9 +72,7 @@ def history_visualized_hook():
         histories_client = huma_sdk.session(service_name="Histories")
         payload = request.json
         conversion_id = payload.get("conversion_id")
-        history_visual = histories_client.fetch_history_visual_result(conversion_id=conversion_id)
-        # print(history_visual['answer']['data'])
-        # pprint.pprint(history_visual['answer']['data'], indent=4)
+        history_visual = histories_client.fetch_history_visual_result(conversion_id)
         print(f'Copy the link from the result and paste in your favorite browser for downloading the visual file')
         print(highlight(json.dumps(history_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         return jsonify({}), 200
@@ -86,7 +80,7 @@ def history_visualized_hook():
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
+
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
@@ -101,7 +95,7 @@ def subscription_updated_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -114,9 +108,7 @@ def subscription_updated_hook():
         href = payload.get("links", [{}])[0].get('href',"")
         subscribed_id = href.split('/')[-2] if '/' in href else ""
         if subscribed_id:
-            subscribed_visual = subscription_client.fetch_subscription_data(conversion_id=conversion_id)
-            # print(subscribed_visual['answer']['data'])
-            # pprint.pprint(subscribed_visual['answer']['data'], indent=4)
+            subscribed_visual = subscription_client.fetch_subscription_data(subscribed_id=subscribed_id)
             print(highlight(json.dumps(subscribed_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         else:
             print('Ticket Number Not Found')
@@ -125,7 +117,7 @@ def subscription_updated_hook():
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
+
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")

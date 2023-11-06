@@ -38,6 +38,17 @@ Follow these steps to set up the webhook client (for local use):
   
 6. Trigger your webhook callback by [submitting a question](../examples/webhooks.py).
 
+### Webhook Events
+
+You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05735ba-quickstart-guide-for-huma-webhooks) that triggers when an event occurs. The following events are supported.
+
+| Resource   | Event Name    | Description                                        |
+|------------|---------------|----------------------------------------------------|
+| Questions  | Computed      | This event is triggered when a question [computation](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual), whether successful or unsuccessful, occurs. When this event is triggered, it indicates that the system has processed the question and either successfully provided an answer or encountered an issue in doing so. |
+| Histories  | Visualized    | 	This event triggers when a [historical](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual) answer, whether successful or failed, is visualized. It retrieves visual representations of answers, such as PDF, CSV, or PPT, providing users access to historical information, regardless of the outcome.|
+| Subscriptions | AnswerUpdated | This event is triggered when there is an update to the answer of a question that a user has [subscribed](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
+
+
 ### Create a Webhook Client Using SDK
 
 With this approach, you can create a webhook client that listens for incoming webhook requests on a static endpoint, "/api/webhook-question-answered." The webhook payload which contains the answer to a question will be displayed in your terminal.
@@ -60,7 +71,6 @@ import huma_sdk
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import TerminalFormatter
-import pprint
 import json
 
 load_dotenv()
@@ -84,7 +94,7 @@ def question_answered_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -97,14 +107,12 @@ def question_answered_hook():
         ticket_number = payload.get("ticket_number")
         answer_payload = questions_client.fetch_answer(ticket_number=ticket_number)
         ## Add your custom logic here
-        # pprint.pprint(answer_payload['answer']['data'], indent=4)
         print(highlight(json.dumps(answer_payload, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         return jsonify({}), 200
 
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
@@ -119,7 +127,7 @@ def history_visualized_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -130,9 +138,8 @@ def history_visualized_hook():
         histories_client = huma_sdk.session(service_name="Histories")
         payload = request.json
         conversion_id = payload.get("conversion_id")
-        history_visual = histories_client.fetch_history_visual_result(conversion_id=conversion_id)
+        history_visual = histories_client.fetch_history_visual_result(conversion_id)
         ## Add your custom logic here
-        # pprint.pprint(history_visual['answer']['data'], indent=4)
         print(f'Copy the link from the result and paste in your favorite browser for downloading the visual file')
         print(highlight(json.dumps(history_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         return jsonify({}), 200
@@ -140,7 +147,6 @@ def history_visualized_hook():
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
@@ -155,7 +161,7 @@ def subscription_updated_hook():
     if not auth_header or auth_header.split(" ")[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     auth_parts = auth_header.split(" ")
     if len(auth_parts) < 2 or auth_parts[1] != API_CALLBACK_AUTH:
         logging.warning("Unauthorized access attempt")
@@ -168,9 +174,8 @@ def subscription_updated_hook():
         href = payload.get("links", [{}])[0].get('href',"")
         subscribed_id = href.split('/')[-2] if '/' in href else ""
         if subscribed_id:
-            subscribed_visual = subscription_client.fetch_subscription_data(conversion_id=conversion_id)
+            subscribed_visual = subscription_client.fetch_subscription_data(subscribed_id=subscribed_id)
             ## Add your custom logic here
-            # pprint.pprint(subscribed_visual['answer']['data'], indent=4)
             print(highlight(json.dumps(subscribed_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
         else:
             print('Ticket Number Not Found')
@@ -179,7 +184,6 @@ def subscription_updated_hook():
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
-        
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")

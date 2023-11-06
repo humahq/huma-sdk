@@ -1,5 +1,6 @@
 import huma_sdk
 import time
+import json
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
 
 
@@ -58,14 +59,14 @@ def main():
     history_client = HumaSDKHistoriesClient()
 
     # Example usage
-    history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
+    # history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
 
-    ticket_number: str = "<write your ticket number>"
-    type: str = "<write one of the possible types>"    # visit documentation for more details
+    ticket_number: str = "6548846cbc6f0c08075a8962"
+    type: str = "bar_chart"    # visit documentation for more details
     history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
 
-    file_type: str = "<write your required file type>"
-    visual_type: str = "<write one of the possible types>"   # will be included in the response payload of 'fetch_history', visit documentation for more details  
+    file_type: str = "ppt"
+    visual_type: str = "bar_chart"   # will be included in the response payload of 'fetch_history', visit documentation for more details
 
     # Steps for getting download link of the history visual file
     submission_status = history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
