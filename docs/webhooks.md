@@ -1,5 +1,30 @@
 ## Webhooks
 
+### Webhook Events
+
+You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05735ba-quickstart-guide-for-huma-webhooks) that triggers when an event occurs. The following events are supported.
+
+| Resource   | Event Name    | Description                                        |
+|------------|---------------|----------------------------------------------------|
+| Questions  | [Computed](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)      |  When this event is triggered, it indicates that the system has processed the question and either successfully provided an answer or encountered an issue in doing so. |
+| Histories  | [Visualized](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)    |When this event is triggered, it retrieves visual representations of answers, such as PDFs, CSVs, or PPTs, in a JSON response that contains downloadable links. |
+| Subscriptions | [AnswerUpdated](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) | This event is triggered when there is an update to the answer of a question that a user has subscribed to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
+
+### Webhook Functions
+
+#### Function 1: `activate_webhook_client`
+
+- **Description**: This function allows users to activate the webhook client locally, enabling it to listen to incoming webhook requests.
+- **Parameters**:
+  - `debug` (optional): Enabling debug mode provides detailed error messages and allows automatic code reloading when changes are detected. Use this mode in a development environment, not in a production setting.
+  - `port` (optional): Defines the port on which the Flask application will listen for incoming requests. By default, the Flask application runs on port 5000.
+ 
+- **Example Usage**:
+
+```python
+webhooks_client.activate_webhook_client(debug=True, port=5000)
+```
+
 ### Setup for Receiving Webhook Callbacks
 
 To receive answers via a webhook locally, you can use ngrok.com to create a publicly accessible endpoint that routes to your local code instance. This is an alternative to setting up a publically facing server.
@@ -37,17 +62,6 @@ Follow these steps to set up the webhook client (for local use):
    - Set `FLASK_APP` to your webhooks code.  Something like `FLASK_APP=examples/webhooks:main` which points to the function `main` in the file `examples/webhooks.py`
   
 6. Trigger your webhook callback by [submitting a question](../examples/webhooks.py).
-
-### Webhook Events
-
-You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05735ba-quickstart-guide-for-huma-webhooks) that triggers when an event occurs. The following events are supported.
-
-| Resource   | Event Name    | Description                                        |
-|------------|---------------|----------------------------------------------------|
-| Questions  | [Computed](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)      |  When this event is triggered, it indicates that the system has processed the question and either successfully provided an answer or encountered an issue in doing so. |
-| Histories  | [Visualized](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)    |When this event is triggered, it retrieves visual representations of answers, such as PDFs, CSVs, or PPTs, in a JSON response that contains downloadable links. |
-| Subscriptions | [AnswerUpdated](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) | This event is triggered when there is an update to the answer of a question that a user has subscribed to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
-
 
 ### Create a Webhook Client Using SDK
 
@@ -240,20 +254,3 @@ By following these steps, you'll have a setup to receive visuals of history answ
     ```
 
 By following these steps, you'll have a setup to receive subscribed answer updationsw through a webhook in a secure and efficient manner.
-
-### Webhook Functions
-
-#### Function 1: `activate_webhook_client`
-
-- **Description**: This function allows users to activate the webhook client locally, enabling it to listen to incoming webhook requests.
-- **Parameters**:
-  - `debug` (optional): Enabling debug mode provides detailed error messages and allows automatic code reloading when changes are detected. Use this mode in a development environment, not in a production setting.
-  - `port` (optional): Defines the port on which the Flask application will listen for incoming requests. By default, the Flask application runs on port 5000.
- 
-- **Example Usage**:
-
-```python
-webhooks_client.activate_webhook_client(debug=True, port=5000)
-```
-
-
