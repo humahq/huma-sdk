@@ -1,5 +1,6 @@
 import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
+from enum import Enum
 
 
 class HumaSDKSubscribesClient:
@@ -49,23 +50,28 @@ class HumaSDKSubscribesClient:
         except Exception as e:
             self.handle_exception(e)
 
+class SubscriptionType(Enum):
+    LINE_CHART = "line_chart"
+    PIE_CHART = "pie_chart"
+    BAR_CHART = "bar_chart"
+    TABLE = "table"
+    REPORT = "report"
+    DASHBOARD = "dashboard"
+    CHOROPLETH = "choropleth"
+    MARKDOWN = "markdown"
 
 def main():
     subscribes_client = HumaSDKSubscribesClient()
-
-    # Example usage
-    subscribes_client.fetch_subscriptions(page=1, limit=50, sort_by=-1, order_by="", question="")
-
-    ticket_number = "<write your ticket number>"   # you can get it by asking new question or from your history or favorites questions
-    subscribes_client.create_subscription(ticket_number=ticket_number)
-
-    subscribed_id = "write your subscribed id"
-    type = "<write one of the possible types>"    # visit documentation for more details
-    subscribes_client.fetch_subscription_data(subscribed_id, page=1, limit=20, type=type)
-    subscribes_client.delete_subscription(subscribed_id)
-
+    ticket_number = "<write your ticket number>"
+    subscribed_id = "<write your subscribed question id>"
     question = "<write your question here>"
-    subscribes_client.fetch_subscription_status(question)
+
+    # Uncomment the function calls you want to execute
+    subscribes_client.fetch_subscriptions(page=1, limit=50, sort_by=-1, order_by="", question="")
+    # subscribes_client.create_subscription(ticket_number=ticket_number)
+    # subscribes_client.fetch_subscription_data(subscribed_id, page=1, limit=20, type=SubscriptionType.BAR_CHART.value)
+    # subscribes_client.delete_subscription(subscribed_id)
+    # subscribes_client.fetch_subscription_status(question)
 
 if __name__ == "__main__":
     main()

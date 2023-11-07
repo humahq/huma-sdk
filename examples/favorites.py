@@ -1,6 +1,6 @@
 import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
-
+from enum import Enum
 
 class HumaSDKFavoritesClient:
     def __init__(self):
@@ -42,19 +42,38 @@ class HumaSDKFavoritesClient:
         except Exception as e:
             self.handle_exception(e)
 
+class FavoriteType(Enum):
+    LINE_CHART = "line_chart"
+    PIE_CHART = "pie_chart"
+    BAR_CHART = "bar_chart"
+    TABLE = "table"
+    REPORT = "report"
+    DASHBOARD = "dashboard"
+    CHOROPLETH = "choropleth"
+    MARKDOWN = "markdown"
+
+
+def example_fetch_favorites(favorites_client):
+    favorites_client.fetch_favorites(page=1, limit=50, sort_by=-1, order_by="", question="")
+
+def example_create_favorite(favorites_client, ticket_number):
+    favorites_client.create_favorite(ticket_number=ticket_number)
+
+def example_fetch_favorite_data(favorites_client, ticket_number, type):
+    favorites_client.fetch_favorite_data(ticket_number, page=1, limit=10, type=type)
+
+def example_delete_favorite(favorites_client, ticket_number):
+    favorites_client.delete_favorite(ticket_number=ticket_number)
 
 def main():
     favorites_client = HumaSDKFavoritesClient()
+    ticket_number = "<write your ticket number>"
 
-    # Example usage
-    favorites_client.fetch_favorites(page=1, limit=50, sort_by=-1, order_by="", question="")
-
-    ticket_number = "<write your ticket number>" # will be included in 'fetch_favorites'
-    favorites_client.create_favorite(ticket_number=ticket_number)
-
-    type: str = "<write one of the possible types>" # will be included in resonse payload of 'fetch_favorites', visit documentation for more details
-    favorites_client.fetch_favorite_data(ticket_number, page=1, limit=10, type=type)
-    favorites_client.delete_favorite(ticket_number)
+    # Uncomment the function calls you want to execute
+    example_fetch_favorites(favorites_client)
+    # example_create_favorite(favorites_client, ticket_number)
+    # example_fetch_favorite_data(favorites_client, ticket_number, FavoriteType.BAR_CHART.value)
+    # example_delete_favorite(favorites_client, ticket_number)
 
 if __name__ == "__main__":
     main()

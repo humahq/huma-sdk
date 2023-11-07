@@ -2,7 +2,7 @@ import huma_sdk
 import time
 import json
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
-
+from enum import Enum
 
 class HumaSDKHistoriesClient:
     def __init__(self):
@@ -54,24 +54,25 @@ class HumaSDKHistoriesClient:
         except Exception as e:
             self.handle_exception(e)
 
+class VisualType(Enum):
+    LINE_CHART = "line_chart"
+    PIE_CHART = "pie_chart"
+    BAR_CHART = "bar_chart"
+    TABLE = "table"
+    REPORT = "report"
+    DASHBOARD = "dashboard"
+    CHOROPLETH = "choropleth"
+    MARKDOWN = "markdown"
 
-def main():
-    history_client = HumaSDKHistoriesClient()
+class FileType(Enum):
+    CSV = "csv"
+    PPTX = "pptx"
+    PDF = "pdf"
 
-    # Example usage
-    # history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
-
-    ticket_number: str = "<write your ticket number>"
-    type: str = "<write one of the possible types>"    # visit documentation for more details
-    history_client.fetch_history_data(ticket_number, page=1, limit=10, type=type)
-
-    file_type: str = "ppt"
-    visual_type: str = "bar_chart"   # will be included in the response payload of 'fetch_history', visit documentation for more details
-
-    # Steps for getting download link of the history visual file
+def download_history_visual(history_client, ticket_number, file_type, visual_type):
     submission_status = history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
-
     conversion_id = submission_status.get('conversion_id')
+
     while True:
         print(f"Checking Status of '{conversion_id}' conversion id")
         history_visual_status = history_client.check_history_visual_status(conversion_id)
@@ -94,6 +95,18 @@ def main():
             print(f'History answer with "{conversion_id}" conversion id is being processed, checking status in 5 seconds...')
             time.sleep(5)
 
+def main():
+    history_client = HumaSDKHistoriesClient()
+    ticket_number = "<write your ticket number>"
+
+    # Uncomment the function calls you want to execute
+    history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
+
+    # Example: Fetch history data
+    # history_client.fetch_history_data(ticket_number, page=1, limit=10, type=VisualType.MARKDOWN.value)
+
+    # Example: Download history visual file
+    # download_history_visual(history_client, ticket_number, FileType.PPTX.value, VisualType.BAR_CHART.value)
 
 if __name__ == "__main__":
     main()
