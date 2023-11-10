@@ -45,7 +45,8 @@ def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "help nsclc"
+    question = "exclusion criteria analysis for active phase 3 oncology"
+    
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
