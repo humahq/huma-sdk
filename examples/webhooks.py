@@ -27,7 +27,7 @@ def main():
     # Example usage
     debug: bool = "<Whether to enable debug mode>"
     port: int = "<write port number to use>"
-    webhooks_client.activate_webhook_client(debug=True, port=5001)
+    webhooks_client.activate_webhook_client(debug=False, port=5001)
 
 if __name__ == "__main__":
     main()

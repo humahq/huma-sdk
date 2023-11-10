@@ -1,10 +1,11 @@
 import huma_sdk
-import time
-import json
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
+import concurrent.futures
+from typing import List
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import TerminalFormatter
+import json
 
 class HumaSDKQuestionsClient:
     def __init__(self, service_name):
@@ -37,44 +38,39 @@ class HumaSDKQuestionsClient:
     def fetch_answer(self, ticket_number: str="", page: int=1, limit: int=10):
         try:
             answer = self.questions_client.fetch_answer(ticket_number, page=page, limit=limit)
+            print(highlight(json.dumps(answer, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
             print(answer)
             return answer
         except Exception as e:
             self.handle_exception(e)
 
-
-def main():
+def submit_questions(questions: List, commands: List=[]):
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
+    for question in questions:
+        huma_client.submit_question(question=question, commands=commands)
+    pass
 
-    # Example usage
-    question = "inclusion criteria analysis for active phase 2 Anal Cancer"
-    
-    commands = []  # write your required commands visit documentation for more details
-    submission_status = huma_client.submit_question(question=question, commands=commands)
-    ticket_number = submission_status.get('ticket_number')
+def submit_questions_thread_manager(questions: List[str], commands: List=[]):
+    list_of_batches_of_questions = _get_question_batches(questions, batch_size=15)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(submit_questions, batch, commands) for batch in list_of_batches_of_questions]
+        batches_of_questions = [f.result() for f in futures]
 
-    while True:
-        print(f"Checking Status of '{ticket_number}' ticket number")
-        status_response = huma_client.check_question_status(ticket_number=ticket_number)
+    return None
 
-        question_status = status_response.get('question_status', '')
-        if question_status == 'succeeded':
-            print(f"Getting Result of Question with '{ticket_number}' ticket number")
-            result_response = huma_client.fetch_answer(ticket_number=ticket_number)
+def _get_question_batches(questions: List[dict], batch_size: int = 1) -> List[List[str]]:
+    '''
+    get batch definitions of questions
+    --------
+        Args:
+            A list of Huma Platform v2 Questions as strings
 
-            sanitized_question = ''.join(e for e in question if e.isalnum() or e.isspace()).replace(' ', '_')
-            with open(f'output/{sanitized_question}_result.json', 'w') as f:
-                print(highlight(json.dumps(result_response, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
-
-            print(f"Result saved to output/{sanitized_question}_result.json")
-            break
-        elif question_status == 'rejected':
-            print(f'The question "{question}" failed to process.')
-            break
-        else:
-            print(f'Question "{question}" is being processed, checking status in 5 seconds...')
-            time.sleep(5)
-
-
-if __name__ == "__main__":
-    main()
+        Returns:
+            batch_size is the maximum items per batch
+    '''
+    batches_of_questions = []
+    # Start a loop over the iterable
+    for index in range(0, len(questions), batch_size):
+        # Create a new iterable by slicing the original
+        batches_of_questions.append(questions[index: min(index + batch_size, len(questions))])
+    return batches_of_questions
