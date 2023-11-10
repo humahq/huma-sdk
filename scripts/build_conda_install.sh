@@ -16,5 +16,4 @@ else
   echo "This is not an Apple Silicon Mac."
 fi
 
-git pull
 python -m pip install -e .

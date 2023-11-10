@@ -4,7 +4,7 @@ display_end() {
   echo 
   echo "You should close and reopen this terminal and vscode if you are running this within vscode."
   echo 
-  echo "Next, create a vscode workspace (File > Save Workspace As) and set your python"
+  echo "Next, if using VS Code, create a vscode workspace (File > Save Workspace As) and set your python"
   echo "interpreter to use '$conda_env_name' as it's environment."
   echo 
   echo "From within vscode you can click ctrl-shift-p and then enter 'python interpreter' and"
