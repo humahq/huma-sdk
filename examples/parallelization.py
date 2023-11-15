@@ -52,7 +52,7 @@ def submit_questions(questions: List, commands: List=[]):
 
 def submit_questions_thread_manager(questions: List[str], commands: List=[]):
     list_of_batches_of_questions = _get_question_batches(questions, batch_size=15)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(submit_questions, batch, commands) for batch in list_of_batches_of_questions]
         batches_of_questions = [f.result() for f in futures]
 
