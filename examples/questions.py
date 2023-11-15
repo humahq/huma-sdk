@@ -1,6 +1,8 @@
-import huma_sdk
-import time
 import json
+import os
+import time
+
+import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
 
 
@@ -60,6 +62,10 @@ def main():
             result_response = huma_client.fetch_answer(ticket_number=ticket_number)
 
             sanitized_question = ''.join(e for e in question if e.isalnum() or e.isspace()).replace(' ', '_')
+
+            if not os.path.exists("output"):
+                os.mkdir("output")
+
             with open(f'output/{sanitized_question}_result.json', 'w') as f:
                 json.dump(result_response, f, indent=4)
 
