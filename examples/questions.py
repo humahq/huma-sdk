@@ -52,6 +52,10 @@ def main():
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
 
+    if 'error_message' in submission_status:
+        print(f'Failed to submit question, because {submission_status["error_message"]}')
+        return
+
     while True:
         print(f"Checking Status of '{ticket_number}' ticket number")
         status_response = huma_client.check_question_status(ticket_number=ticket_number)

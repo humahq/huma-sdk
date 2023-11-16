@@ -1,8 +1,11 @@
-import huma_sdk
 import time
 import json
-from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
+import os
 from enum import Enum
+
+import huma_sdk
+from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
+
 
 class HumaSDKHistoriesClient:
     def __init__(self):
@@ -73,6 +76,10 @@ def download_history_visual(history_client, ticket_number, file_type, visual_typ
     submission_status = history_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
     conversion_id = submission_status.get('conversion_id')
 
+    if 'error_message' in submission_status:
+        print(f'Failed to submit question, because {submission_status["error_message"]}')
+        return
+
     while True:
         print(f"Checking Status of '{conversion_id}' conversion id")
         history_visual_status = history_client.check_history_visual_status(conversion_id)
@@ -81,6 +88,9 @@ def download_history_visual(history_client, ticket_number, file_type, visual_typ
         if conversion_status == 'succeeded':
             print(f"Getting visual of answer with '{conversion_id}' conversion id")
             result_response = history_client.fetch_history_visual_result(conversion_id)
+
+            if not os.path.exists("output"):
+                os.mkdir("output")
 
             with open(f'output/{conversion_id}_visual.json', 'w') as f:
                 json.dump(result_response, f, indent=4)
