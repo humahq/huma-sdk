@@ -253,4 +253,4 @@ By following these steps, you'll have a setup to receive visuals of history answ
     print("subscription_status:", subscription_status)
     ```
 
-By following these steps, you'll have a setup to receive subscribed answer updationsw through a webhook in a secure and efficient manner.
+By following these steps, you'll have a setup to receive subscribed answer updations through a webhook in a secure and efficient manner.
