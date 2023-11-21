@@ -4,7 +4,9 @@ import time
 
 import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
-
+from pygments import highlight
+from pygments.lexers import JsonLexer
+from pygments.formatters import TerminalFormatter
 
 class HumaSDKQuestionsClient:
     def __init__(self, service_name):
@@ -21,7 +23,9 @@ class HumaSDKQuestionsClient:
     def submit_question(self, question: str="", commands: list=None):
         try:
             question_status = self.questions_client.submit_question(question=question, commands=commands)
-            print(question_status)
+            json_str = json.dumps(question_status, indent=4)
+            print("submit:")
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return question_status
         except Exception as e:
             self.handle_exception(e)
@@ -29,6 +33,9 @@ class HumaSDKQuestionsClient:
     def check_question_status(self, ticket_number: str=""):
         try:
             question_status = self.questions_client.check_question_status(ticket_number)
+            json_str = json.dumps(question_status, indent=4)
+            print("status:")
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             print(question_status)
             return question_status
         except Exception as e:
@@ -37,7 +44,8 @@ class HumaSDKQuestionsClient:
     def fetch_answer(self, ticket_number: str="", page: int=1, limit: int=10):
         try:
             answer = self.questions_client.fetch_answer(ticket_number, page=page, limit=limit)
-            print(answer)
+            json_str = json.dumps(answer, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return answer
         except Exception as e:
             self.handle_exception(e)
@@ -47,7 +55,7 @@ def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "inclusion criteria analysis for active phase 2 Acute Myleoid Leukemia"
+    question = "Top Sponsors in NSCLC"
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
