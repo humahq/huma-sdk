@@ -118,6 +118,7 @@ def example_fetch_favorite_data(favorites_client: HumaSDKFavoritesClient, ticket
         except Exception as e:
             favorites_client.handle_exception(e)
 
+
 def main():
     favorites_client = HumaSDKFavoritesClient()
     ticket_number = "<write your ticket number>"

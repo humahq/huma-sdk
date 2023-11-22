@@ -119,8 +119,8 @@ def example_fetch_subscription_data(subscribes_client: HumaSDKSubscribesClient, 
 
 def main():
     subscribes_client = HumaSDKSubscribesClient()
-    # ticket_number = "<write your ticket number>"
-    subscribed_id = "<write your subscribed id>"
+    ticket_number = "<write your ticket number>"
+    subscribed_id = "<write your subscribed question id>"
     question = "<write your question here>"
 
     #only applicable if answer data is paginated

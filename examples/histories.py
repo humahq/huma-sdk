@@ -115,34 +115,6 @@ def download_history_visual(history_client, ticket_number, file_type, visual_typ
             time.sleep(5)
 
 
-def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str, max_page_count: int=10):
-        try:
-            result_response = history_client.fetch_history_data(ticket_number=ticket_number, page=1, limit=25)
-
-            if result_response.get('metadata'):
-                answer_data: list = result_response.get('answer', {}).get('data', [])
-                for page in range(2, min(max_page_count, result_response.get('metadata', {}).get('page_count', 0) + 1)):
-                    page_limit = result_response.get('metadata', {}).get('per_page')
-                    total_records = result_response.get('metadata', {}).get('total_count')
-                    print(f"Successfully fetched {(page-1) * page_limit} records out of {total_records}. Fetching records for page {page}. Next fetch in 5 seconds...")
-                    time.sleep(5)
-                    result_response = history_client.fetch_history_data(page=page, limit=page_limit, ticket_number=ticket_number)
-                    new_data = result_response.get('answer', {}).get('data', [])
-                    answer_data.extend(new_data)
-
-                result_response['answer']['data'] = answer_data
-                del result_response['metadata']
-
-            if not os.path.exists("output"):
-                os.mkdir("output")
-
-            with open(f'output/{ticket_number}_history_data.json', 'w') as f:
-                json.dump(result_response, f, indent=4)
-
-        except Exception as e:
-            history_client.handle_exception(e)
-
-
 def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str, type: str, max_page_count: int=10, limit: int=25):
         try:
             result_response = history_client.fetch_history_data(ticket_number=ticket_number, limit=limit, type=type)
@@ -187,6 +159,7 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
 
         except Exception as e:
             history_client.handle_exception(e)
+
 
 def main():
     history_client = HumaSDKHistoriesClient()
