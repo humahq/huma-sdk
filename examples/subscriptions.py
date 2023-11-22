@@ -70,15 +70,19 @@ class SubscriptionType(Enum):
     CHOROPLETH = "choropleth"
     MARKDOWN = "markdown"
 
-def example_fetch_subscription_data(subscribes_client: HumaSDKSubscribesClient, subscribed_id: str, type: str, max_page_count: int = 10, limit: str = '25'):
+def example_fetch_subscription_data(subscribes_client: HumaSDKSubscribesClient, subscribed_id: str, type: str, max_page_count: int = 10, limit: str = 25):
     try:
         # Initial fetch
         result_response = subscribes_client.fetch_subscription_data(subscribed_id=subscribed_id, limit=limit, type=type)
 
         if 'metadata' in result_response:
             answer_data = result_response.get('subscriptions', {}).get('data', [])
+            total_records_present = result_response['metadata'].get('total_count', 0)
+            print(f"Total records present: {total_records_present}")
             pages_to_fetch = min(max_page_count, result_response['metadata'].get('page_count', 0))
             total_records = min(pages_to_fetch * int(limit), result_response['metadata'].get('total_count', 0))
+            if total_records < total_records_present:
+                print(f"Restricting total records to {total_records} only because max_page_count is set to {max_page_count} with per page limit as {limit}.")
 
             print(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page 2.")
             print("Next fetch in 5 seconds...")
@@ -118,7 +122,9 @@ def main():
     # ticket_number = "<write your ticket number>"
     subscribed_id = "<write your subscribed id>"
     question = "<write your question here>"
-    max_page_count = "<write maximum required pages>"  #only applicable if answer data is paginated
+
+    #only applicable if answer data is paginated
+    max_page_count = "<write maximum required pages>"
     limit = "<write limit of each page>"
 
     # Uncomment the function calls you want to execute

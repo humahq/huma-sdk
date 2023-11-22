@@ -36,7 +36,6 @@ class HumaSDKQuestionsClient:
             json_str = json.dumps(question_status, indent=4)
             print("status:")
             print(highlight(json_str, JsonLexer(), TerminalFormatter()))
-            print(question_status)
             return question_status
         except Exception as e:
             self.handle_exception(e)
@@ -50,19 +49,42 @@ class HumaSDKQuestionsClient:
         except Exception as e:
             self.handle_exception(e)
 
-    def fetch_paginated_answer(self, result_response, ticket_number, max_page_count=10):
+    def fetch_answer_data(self, ticket_number, max_page_count=10, limit: int=25):
         try:
-            answer_data: list = result_response.get('answer', {}).get('data', [])
-            for page in range(2, min(max_page_count, result_response.get('metadata', {}).get('page_count', 0) + 1)):
-                page_limit = result_response.get('metadata', {}).get('per_page')
-                print(f'Fetching {page_limit} records of page {page} in 5 seconds...')
-                time.sleep(5)
-                result_response = self.fetch_answer(page=page, limit=page_limit, ticket_number=ticket_number)
-                new_data = result_response.get('answer', {}).get('data', [])
-                answer_data.extend(new_data)
+            result_response = self.fetch_answer(ticket_number=ticket_number, limit=limit)
 
-            result_response['answer']['data'] = answer_data
-            del result_response['metadata']
+            if 'metadata' in result_response:
+                answer_data: list = result_response.get('answer', {}).get('data', [])
+                total_records_present = result_response['metadata'].get('total_count', 0)
+                print(f"Total records present: {total_records_present}")
+                pages_to_fetch = min(max_page_count, result_response['metadata'].get('page_count', 0))
+                total_records = min(pages_to_fetch * int(limit), result_response['metadata'].get('total_count', 0))
+                if total_records < total_records_present:
+                    print(f"Restricting total records to {total_records} only because max_page_count is set to {max_page_count} with per page limit as {limit}.")
+
+
+                print(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page 2.")
+                print("Next fetch in 5 seconds...")
+                time.sleep(5)
+
+                # Fetch additional pages
+                for page in range(2, pages_to_fetch + 1):
+                    page_limit = result_response['metadata'].get('per_page')
+                    result_response = self.fetch_answer(page=page, limit=page_limit, ticket_number=ticket_number)
+                    new_data = result_response.get('answer', {}).get('data', [])
+                    answer_data.extend(new_data)
+
+                    if page != pages_to_fetch:
+                        print(f"Successfully fetched {(page) * page_limit} records out of {total_records}. Fetching records for page {page + 1}.")
+                        print("Next fetch in 5 seconds...")
+                        time.sleep(5)
+                    else:
+                        print(f"Successfully fetched {(page) * page_limit} records out of {total_records}.")
+
+                # Update the response structure
+                result_response['answer']['data'] = answer_data
+                del result_response['metadata']
+
             return result_response
 
         except Exception as e:
@@ -73,10 +95,14 @@ def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "Planned patient enrollment for pediatric Ewing's Sarcoma trials"
+    question = "Top Sponsors in NSCLC"
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
+    
+    #only applicable if answer data is paginated
+    max_page_count = "<write maximum required pages>"
+    limit = "<write limit of each page>"
 
     if 'error_message' in submission_status:
         print(f'Failed to submit question, because {submission_status["error_message"]}')
@@ -89,15 +115,14 @@ def main():
         question_status = status_response.get('question_status', '')
         if question_status == 'succeeded':
             print(f"Getting Result of Question with '{ticket_number}' ticket number")
-            result_response = huma_client.fetch_answer(ticket_number=ticket_number)
-            if result_response.get('metadata'):
-                result_response = huma_client.fetch_paginated_answer(result_response, ticket_number)
+            result_response = huma_client.fetch_answer_data(ticket_number, max_page_count=max_page_count, limit=limit)
 
             sanitized_question = ''.join(e for e in question if e.isalnum() or e.isspace()).replace(' ', '_')
 
-            if not os.path.exists("output"):
-                os.mkdir("output")
+            # Create 'output' directory if it doesn't exist
+            os.makedirs("output", exist_ok=True)
 
+            # Save the result to a JSON file
             with open(f'output/{sanitized_question}_result.json', 'w') as f:
                 json.dump(result_response, f, indent=4)
 

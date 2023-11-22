@@ -149,8 +149,12 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
 
             if 'metadata' in result_response:
                 answer_data = result_response.get('answer', {}).get('data', [])
+                total_records_present = result_response['metadata'].get('total_count', 0)
+                print(f"Total records present: {total_records_present}")
                 pages_to_fetch = min(max_page_count, result_response['metadata'].get('page_count', 0))
                 total_records = min(pages_to_fetch * int(limit), result_response['metadata'].get('total_count', 0))
+                if total_records < total_records_present:
+                    print(f"Restricting total records to {total_records} only because max_page_count is set to {max_page_count} with per page limit as {limit}.")
 
                 print(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page 2.")
                 print("Next fetch in 5 seconds...")
@@ -178,7 +182,7 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
             os.makedirs("output", exist_ok=True)
 
             # Save the result to a JSON file
-            with open(f'output/{ticket_number}_favorite_data.json', 'w') as f:
+            with open(f'output/{ticket_number}_history_data.json', 'w') as f:
                 json.dump(result_response, f, indent=4)
 
         except Exception as e:
@@ -186,13 +190,16 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
 
 def main():
     history_client = HumaSDKHistoriesClient()
-    ticket_number = "655dcd494a7d1d3363d6047b"
+    ticket_number = "<write your ticket number>"
+    #only applicable if answer data is paginated
+    max_page_count = 3 or "<write maximum required pages>"
+    limit = 1 or "<write limit of each page>"
 
     # Uncomment the function calls you want to execute
-    # history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
+    history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
 
     # Example: Fetch history data
-    # fetch_answer_data(history_client, ticket_number)
+    # fetch_answer_data(history_client, ticket_number, type=VisualType.TABLE.value, max_page_count=max_page_count, limit=limit)
 
     # Example: Download history visual file
     # download_history_visual(history_client, ticket_number, FileType.PPTX.value, VisualType.BAR_CHART.value)
