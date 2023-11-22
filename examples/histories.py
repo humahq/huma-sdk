@@ -5,6 +5,9 @@ from enum import Enum
 
 import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
+from pygments import highlight
+from pygments.lexers import JsonLexer
+from pygments.formatters import TerminalFormatter
 
 
 class HumaSDKHistoriesClient:
@@ -22,21 +25,25 @@ class HumaSDKHistoriesClient:
     def fetch_history(self, page: int=1, limit: int=20, sort_by: int=-1, order_by: str="", question: str=""):
         try:
             history = self.histories_client.fetch_history(page=page, limit=limit, sort_by=sort_by, order_by=order_by, question=question)
-            print(history)
+            json_str = json.dumps(history, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
         except Exception as e:
             self.handle_exception(e)
 
     def fetch_history_data(self, ticket_number: str="", page: int=1, limit: int=10, type: str=""):
         try:
             history_data = self.histories_client.fetch_history_data(ticket_number, page=page, limit=limit, type=type)
-            print(history_data)
+            json_str = json.dumps(history_data, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
+            return history_data
         except Exception as e:
             self.handle_exception(e)
 
     def submit_history_visual(self, ticket_number, file_type, visual_type):
         try:
             submission_status = self.histories_client.submit_history_visual(ticket_number=ticket_number, file_type=file_type, visual_type=visual_type)
-            print(submission_status)
+            json_str = json.dumps(submission_status, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return submission_status
         except Exception as e:
             self.handle_exception(e)
@@ -44,7 +51,8 @@ class HumaSDKHistoriesClient:
     def check_history_visual_status(self, conversion_id: str=""):
         try:
             conversion_status = self.histories_client.check_history_visual_status(conversion_id)
-            print(conversion_status)
+            json_str = json.dumps(conversion_status, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return conversion_status
         except Exception as e:
             self.handle_exception(e)
@@ -52,7 +60,8 @@ class HumaSDKHistoriesClient:
     def fetch_history_visual_result(self, conversion_id: str=""):
         try:
             history_visual = self.histories_client.fetch_history_visual_result(conversion_id)
-            print(history_visual)
+            json_str = json.dumps(history_visual, indent=4)
+            print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return history_visual
         except Exception as e:
             self.handle_exception(e)
@@ -105,15 +114,85 @@ def download_history_visual(history_client, ticket_number, file_type, visual_typ
             print(f'History answer with "{conversion_id}" conversion id is being processed, checking status in 5 seconds...')
             time.sleep(5)
 
+
+def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str, max_page_count: int=10):
+        try:
+            result_response = history_client.fetch_history_data(ticket_number=ticket_number, page=1, limit=25)
+
+            if result_response.get('metadata'):
+                answer_data: list = result_response.get('answer', {}).get('data', [])
+                for page in range(2, min(max_page_count, result_response.get('metadata', {}).get('page_count', 0) + 1)):
+                    page_limit = result_response.get('metadata', {}).get('per_page')
+                    total_records = result_response.get('metadata', {}).get('total_count')
+                    print(f"Successfully fetched {(page-1) * page_limit} records out of {total_records}. Fetching records for page {page}. Next fetch in 5 seconds...")
+                    time.sleep(5)
+                    result_response = history_client.fetch_history_data(page=page, limit=page_limit, ticket_number=ticket_number)
+                    new_data = result_response.get('answer', {}).get('data', [])
+                    answer_data.extend(new_data)
+
+                result_response['answer']['data'] = answer_data
+                del result_response['metadata']
+
+            if not os.path.exists("output"):
+                os.mkdir("output")
+
+            with open(f'output/{ticket_number}_history_data.json', 'w') as f:
+                json.dump(result_response, f, indent=4)
+
+        except Exception as e:
+            history_client.handle_exception(e)
+
+
+def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str, type: str, max_page_count: int=10, limit: int=25):
+        try:
+            result_response = history_client.fetch_history_data(ticket_number=ticket_number, limit=limit, type=type)
+
+            if 'metadata' in result_response:
+                answer_data = result_response.get('answer', {}).get('data', [])
+                pages_to_fetch = min(max_page_count, result_response['metadata'].get('page_count', 0))
+                total_records = min(pages_to_fetch * int(limit), result_response['metadata'].get('total_count', 0))
+
+                print(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page 2.")
+                print("Next fetch in 5 seconds...")
+                time.sleep(5)
+
+                # Fetch additional pages
+                for page in range(2, pages_to_fetch + 1):
+                    page_limit = result_response['metadata'].get('per_page')
+                    result_response = history_client.fetch_history_data(page=page, limit=page_limit, ticket_number=ticket_number)
+                    new_data = result_response.get('answer', {}).get('data', [])
+                    answer_data.extend(new_data)
+
+                    if page != pages_to_fetch:
+                        print(f"Successfully fetched {(page) * page_limit} records out of {total_records}. Fetching records for page {page + 1}.")
+                        print("Next fetch in 5 seconds...")
+                        time.sleep(5)
+                    else:
+                        print(f"Successfully fetched {(page) * page_limit} records out of {total_records}.")
+
+                # Update the response structure
+                result_response['answer']['data'] = answer_data
+                del result_response['metadata']
+
+            # Create 'output' directory if it doesn't exist
+            os.makedirs("output", exist_ok=True)
+
+            # Save the result to a JSON file
+            with open(f'output/{ticket_number}_favorite_data.json', 'w') as f:
+                json.dump(result_response, f, indent=4)
+
+        except Exception as e:
+            history_client.handle_exception(e)
+
 def main():
     history_client = HumaSDKHistoriesClient()
-    ticket_number = "<write your ticket number>"
+    ticket_number = "655dcd494a7d1d3363d6047b"
 
     # Uncomment the function calls you want to execute
-    history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
+    # history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
 
     # Example: Fetch history data
-    # history_client.fetch_history_data(ticket_number, page=1, limit=10, type=VisualType.MARKDOWN.value)
+    # fetch_answer_data(history_client, ticket_number)
 
     # Example: Download history visual file
     # download_history_visual(history_client, ticket_number, FileType.PPTX.value, VisualType.BAR_CHART.value)

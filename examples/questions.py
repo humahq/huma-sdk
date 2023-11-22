@@ -50,12 +50,30 @@ class HumaSDKQuestionsClient:
         except Exception as e:
             self.handle_exception(e)
 
+    def fetch_paginated_answer(self, result_response, ticket_number, max_page_count=10):
+        try:
+            answer_data: list = result_response.get('answer', {}).get('data', [])
+            for page in range(2, min(max_page_count, result_response.get('metadata', {}).get('page_count', 0) + 1)):
+                page_limit = result_response.get('metadata', {}).get('per_page')
+                print(f'Fetching {page_limit} records of page {page} in 5 seconds...')
+                time.sleep(5)
+                result_response = self.fetch_answer(page=page, limit=page_limit, ticket_number=ticket_number)
+                new_data = result_response.get('answer', {}).get('data', [])
+                answer_data.extend(new_data)
+
+            result_response['answer']['data'] = answer_data
+            del result_response['metadata']
+            return result_response
+
+        except Exception as e:
+            self.handle_exception(e)
+
 
 def main():
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
-    question = "Top Sponsors in NSCLC"
+    question = "Planned patient enrollment for pediatric Ewing's Sarcoma trials"
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
@@ -72,6 +90,8 @@ def main():
         if question_status == 'succeeded':
             print(f"Getting Result of Question with '{ticket_number}' ticket number")
             result_response = huma_client.fetch_answer(ticket_number=ticket_number)
+            if result_response.get('metadata'):
+                result_response = huma_client.fetch_paginated_answer(result_response, ticket_number)
 
             sanitized_question = ''.join(e for e in question if e.isalnum() or e.isspace()).replace(' ', '_')
 
