@@ -103,10 +103,10 @@ def main():
     commands = []  # write your required commands visit documentation for more details
     submission_status = huma_client.submit_question(question=question, commands=commands)
     ticket_number = submission_status.get('ticket_number')
-    
+
     #only applicable if answer data is paginated
-    max_page_count = "<write maximum required pages>"
-    limit = 10
+    max_page_count = 10
+    limit = 100
 
     if 'error_message' in submission_status:
         print(f'Failed to submit question, because {submission_status["error_message"]}')
