@@ -78,6 +78,10 @@ def example_fetch_favorite_data(favorites_client: HumaSDKFavoritesClient, ticket
             result_response = favorites_client.fetch_favorite_data(ticket_number=ticket_number, limit=limit, type=type)
 
             if 'metadata' in result_response:
+                #validating max_page_count
+                if not isinstance(max_page_count, int):
+                    max_page_count = 3
+
                 answer_data = result_response.get('answer', {}).get('data', [])
                 total_records_present = result_response['metadata'].get('total_count', 0)
                 print(f"Total records present: {total_records_present}")
@@ -124,8 +128,8 @@ def main():
     ticket_number = "<write your ticket number>"
 
     #only applicable if answer data is paginated
-    max_page_count = 3 or "<write maximum required pages>"  
-    limit = 1 or "<write limit of each page>"
+    max_page_count = "<write maximum required pages>"  
+    limit = 10
 
     # Uncomment the function calls you want to execute
     example_fetch_favorites(favorites_client)

@@ -76,6 +76,10 @@ def example_fetch_subscription_data(subscribes_client: HumaSDKSubscribesClient, 
         result_response = subscribes_client.fetch_subscription_data(subscribed_id=subscribed_id, limit=limit, type=type)
 
         if 'metadata' in result_response:
+            #validating max_page_count
+            if not isinstance(max_page_count, int):
+                max_page_count = 3
+
             answer_data = result_response.get('subscriptions', {}).get('data', [])
             total_records_present = result_response['metadata'].get('total_count', 0)
             print(f"Total records present: {total_records_present}")
@@ -125,7 +129,7 @@ def main():
 
     #only applicable if answer data is paginated
     max_page_count = "<write maximum required pages>"
-    limit = "<write limit of each page>"
+    limit = 10
 
     # Uncomment the function calls you want to execute
     subscribes_client.fetch_subscriptions(page=1, limit=50, sort_by=-1, order_by="", question="")

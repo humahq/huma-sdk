@@ -54,6 +54,10 @@ class HumaSDKQuestionsClient:
             result_response = self.fetch_answer(ticket_number=ticket_number, limit=limit)
 
             if 'metadata' in result_response:
+                #validating max_page_count
+                if not isinstance(max_page_count, int):
+                    max_page_count = 3
+
                 answer_data: list = result_response.get('answer', {}).get('data', [])
                 total_records_present = result_response['metadata'].get('total_count', 0)
                 print(f"Total records present: {total_records_present}")
@@ -102,7 +106,7 @@ def main():
     
     #only applicable if answer data is paginated
     max_page_count = "<write maximum required pages>"
-    limit = "<write limit of each page>"
+    limit = 10
 
     if 'error_message' in submission_status:
         print(f'Failed to submit question, because {submission_status["error_message"]}')

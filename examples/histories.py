@@ -120,6 +120,10 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
             result_response = history_client.fetch_history_data(ticket_number=ticket_number, limit=limit, type=type)
 
             if 'metadata' in result_response:
+                #validating max_page_count
+                if not isinstance(max_page_count, int):
+                    max_page_count = 3
+
                 answer_data = result_response.get('answer', {}).get('data', [])
                 total_records_present = result_response['metadata'].get('total_count', 0)
                 print(f"Total records present: {total_records_present}")
@@ -164,9 +168,10 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
 def main():
     history_client = HumaSDKHistoriesClient()
     ticket_number = "<write your ticket number>"
+
     #only applicable if answer data is paginated
-    max_page_count = 3 or "<write maximum required pages>"
-    limit = 1 or "<write limit of each page>"
+    max_page_count = "<write maximum required pages>"
+    limit = 10
 
     # Uncomment the function calls you want to execute
     history_client.fetch_history(page=1, limit=20, sort_by=-1, order_by="", question="")
