@@ -83,8 +83,24 @@ class TestFavoritesClientIntegration(unittest.TestCase):
             self.ticket_number = favorite_object['ticket_number']
             self.visual_type = favorite_object['type']
 
+    def fetch_aggregated_favorites(self):
+        result = self.favorites_client.fetch_favorites(limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+        if not result.get('favorites'):
+            result = self.handle_empty_favorites()
+            if not result:
+                return result
+        else:
+            self.assert_favorites(result)
+            favorite_object = result['favorites'][0]
+            self.ticket_number = favorite_object['ticket_number']
+            self.visual_type = favorite_object['type']
+
     def fetch_favorite_data(self):
         result = self.favorites_client.fetch_favorite_data(ticket_number=self.ticket_number, page=1, limit=20, type=self.visual_type)
+        self.assert_favorite_data(result)
+
+    def fetch_aggregated_favorite_data(self):
+        result = self.favorites_client.fetch_favorite_data(ticket_number=self.ticket_number, limit=20, type=self.visual_type, is_batch_pages=True, max_page_count=5)
         self.assert_favorite_data(result)
 
     def delete_favorite(self):
@@ -97,8 +113,10 @@ class TestFavoritesClientIntegration(unittest.TestCase):
 
     def test_favorites_module(self):
         result = self.fetch_favorites()
+        self.fetch_aggregated_favorites()
         if result:
             self.fetch_favorite_data()
+            self.fetch_aggregated_favorite_data()
             self.delete_favorite()
             self.create_favorite()
 

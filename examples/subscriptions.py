@@ -19,9 +19,9 @@ class HumaSDKSubscribesClient:
         else:
             print("An unexpected error occurred:", exception)
 
-    def fetch_subscriptions(self, page: int=1, limit: int=50, sort_by: int=-1, order_by: str="", question: str=""):
+    def fetch_subscriptions(self, page: int=1, limit: int=50, sort_by: int=-1, order_by: str="", question: str="", is_batch_pages: bool=False, max_page_count: int=10):
         try:
-            subscription = self.subscribes_client.fetch_subscriptions(page=page, limit=limit, sort_by=sort_by, order_by=order_by, question=question)
+            subscription = self.subscribes_client.fetch_subscriptions(page=page, limit=limit, sort_by=sort_by, order_by=order_by, question=question, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
             json_str = json.dumps(subscription, indent=4)
             print(highlight(json_str, JsonLexer(), TerminalFormatter()))
         except Exception as e:
@@ -35,9 +35,9 @@ class HumaSDKSubscribesClient:
         except Exception as e:
             self.handle_exception(e)
 
-    def fetch_subscription_data(self, subscribed_id: str="",page: int=1, limit: int=50, type:str=""):
+    def fetch_subscription_data(self, subscribed_id: str="",page: int=1, limit: int=50, type:str="", is_batch_pages: bool=False, max_page_count: int=10):
         try:
-            subscription = self.subscribes_client.fetch_subscription_data(subscribed_id,page=page,limit=limit,type=type)
+            subscription = self.subscribes_client.fetch_subscription_data(subscribed_id,page=page,limit=limit,type=type, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
             json_str = json.dumps(subscription, indent=4)
             print(highlight(json_str, JsonLexer(), TerminalFormatter()))
             return subscription
@@ -70,55 +70,22 @@ class SubscriptionType(Enum):
     CHOROPLETH = "choropleth"
     MARKDOWN = "markdown"
 
-def example_fetch_subscription_data(subscribes_client: HumaSDKSubscribesClient, subscribed_id: str, type: str, max_page_count: int = 10, limit: str = 25):
-    try:
-        # Initial fetch
-        result_response = subscribes_client.fetch_subscription_data(subscribed_id=subscribed_id, limit=limit, type=type)
 
-        if 'metadata' in result_response:
-            #validating max_page_count
-            if not isinstance(max_page_count, int):
-                max_page_count = 3
+def fetch_answer_data(subscribes_client: HumaSDKSubscribesClient, subscribed_id: str, page: int, limit: int, type: str, is_batch_pages: bool, max_page_count: int):
+        try:
+            result_response = subscribes_client.fetch_subscription_data(subscribed_id=subscribed_id, page=page, limit=limit, type=type, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
 
-            answer_data = result_response.get('subscriptions', {}).get('data', [])
-            total_records_present = result_response['metadata'].get('total_count', 0)
-            print(f"Total records present: {total_records_present}")
-            pages_to_fetch = min(max_page_count, result_response['metadata'].get('page_count', 0))
-            total_records = min(pages_to_fetch * int(limit), result_response['metadata'].get('total_count', 0))
-            if total_records < total_records_present:
-                print(f"Restricting total records to {total_records} only because max_page_count is set to {max_page_count} with per page limit as {limit}.")
+            # Create 'output' directory if it doesn't exist
+            os.makedirs("output", exist_ok=True)
 
-            print(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page 2.")
-            print("Next fetch in 5 seconds...")
-            time.sleep(5)
+            # Save the result to a JSON file
+            with open(f'output/{subscribed_id}_subscription_data.json', 'w') as f:
+                json.dump(result_response, f, indent=4)
 
-            # Fetch additional pages
-            for page in range(2, pages_to_fetch + 1):
-                page_limit = result_response['metadata'].get('per_page')
-                result_response = subscribes_client.fetch_subscription_data(page=page, limit=page_limit, subscribed_id=subscribed_id)
-                new_data = result_response.get('subscriptions', {}).get('data', [])
-                answer_data.extend(new_data)
+            print(f"Result saved to output/{subscribed_id}_subscription_data.json")
 
-                if page != pages_to_fetch:
-                    print(f"Successfully fetched {(page) * page_limit} records out of {total_records}. Fetching records for page {page + 1}.")
-                    print("Next fetch in 5 seconds...")
-                    time.sleep(5)
-                else:
-                    print(f"Successfully fetched {(page) * page_limit} records out of {total_records}.")
-
-            # Update the response structure
-            result_response['subscriptions']['data'] = answer_data
-            del result_response['metadata']
-
-        # Create 'output' directory if it doesn't exist
-        os.makedirs("output", exist_ok=True)
-
-        # Save the result to a JSON file
-        with open(f'output/{subscribed_id}_subscription_data.json', 'w') as f:
-            json.dump(result_response, f, indent=4)
-
-    except Exception as e:
-        subscribes_client.handle_exception(e)
+        except Exception as e:
+            subscribes_client.handle_exception(e)
 
 
 def main():
@@ -127,14 +94,15 @@ def main():
     subscribed_id = "<write your subscribed question id>"
     question = "<write your question here>"
 
-    #only applicable if answer data is paginated
-    max_page_count = "<write maximum required pages>"
-    limit = 10
+    #only applicable if response data is paginated
+    page, limit = 1, 2
+    max_page_count = 10
+    is_batch_pages = bool(max_page_count)
 
     # Uncomment the function calls you want to execute
-    subscribes_client.fetch_subscriptions(page=1, limit=50, sort_by=-1, order_by="", question="")
+    subscribes_client.fetch_subscriptions(page=page, limit=limit, sort_by=-1, order_by="", question="", is_batch_pages=is_batch_pages, max_page_count=max_page_count)
     # subscribes_client.create_subscription(ticket_number=ticket_number)
-    # example_fetch_subscription_data(subscribes_client=subscribes_client, subscribed_id=subscribed_id, type=SubscriptionType.TABLE.value, max_page_count=max_page_count, limit=limit)
+    # fetch_answer_data(subscribes_client, subscribed_id=subscribed_id, page=page, limit=limit, type=SubscriptionType.TABLE.value, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
     # subscribes_client.delete_subscription(subscribed_id)
     # subscribes_client.fetch_subscription_status(question)
 

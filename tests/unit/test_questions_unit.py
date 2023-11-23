@@ -40,7 +40,7 @@ class TestCheckQuestionStatusUnitCase(unittest.TestCase):
 
     def create_expected_response_payload(self):
         return {
-            "question": "Top Sponsors in NSCLC",
+            "question": "Planned patient enrollment for pediatric ewing's sarcoma trials",
             "question_status": "accepted",
             "ticket_number": self.mock_ticket_number
         }
@@ -81,7 +81,15 @@ class TestGetAnswerUnitCase(unittest.TestCase):
         expected_response = self.create_expected_response_payload()
         mock_make_request.return_value = expected_response
         client = _Questions()
-        answer_payload = client.fetch_answer(self.mock_ticket_number)
+        answer_payload = client.fetch_answer(self.mock_ticket_number,  page=1, limit=50)
+        self.assert_result(answer_payload, expected_response)
+
+    @patch.object(_Questions, '_make_request')
+    def test_get_aggregated_answer_success(self, mock_make_request):
+        expected_response = self.create_expected_response_payload()
+        mock_make_request.return_value = expected_response
+        client = _Questions()
+        answer_payload = client.fetch_answer(self.mock_ticket_number, limit=50, is_batch_pages=True, max_page_count=5)
         self.assert_result(answer_payload, expected_response)
 
 

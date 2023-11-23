@@ -8,6 +8,7 @@ class TestFetchFavoritesUnitCase(unittest.TestCase):
 
     def setUp(self):
         self.keyword_paramaters = dict(page=1, limit=50, sort_by=-1, order_by="", question="")
+        self.aggregated_keyword_parameters = dict(limit=50, sort_by=-1, order_by="", question="", is_batch_pages=True, max_page_count=5)
 
     def create_expected_response_payload(self):
         return {
@@ -25,11 +26,19 @@ class TestFetchFavoritesUnitCase(unittest.TestCase):
         self.assertEqual(favorites_payload, expected_response)
 
     @patch.object(_Favorites, '_make_request')
-    def test_submit_question_success(self, mock_make_request):
+    def test_fetch_favorites_success(self, mock_make_request):
         expected_response = self.create_expected_response_payload()
         mock_make_request.return_value = expected_response
         client = _Favorites()
         favorites_payload = client.fetch_favorites(**self.keyword_paramaters)
+        self.assert_result(favorites_payload, expected_response)
+
+    @patch.object(_Favorites, '_make_request')
+    def test_fetch_aggregated_favorites_success(self, mock_make_request):
+        expected_response = self.create_expected_response_payload()
+        mock_make_request.return_value = expected_response
+        client = _Favorites()
+        favorites_payload = client.fetch_favorites(**self.aggregated_keyword_parameters)
         self.assert_result(favorites_payload, expected_response)
 
 
@@ -85,7 +94,15 @@ class TestFetchFavoriteDataUnitCase(unittest.TestCase):
         expected_response = self.create_expected_response_payload()
         mock_make_request.return_value = expected_response
         client = _Favorites()
-        favorite_payload = client.fetch_favorite_data(self.mock_ticket_number)
+        favorite_payload = client.fetch_favorite_data(self.mock_ticket_number, page=1, limit=50)
+        self.assert_result(favorite_payload, expected_response)
+
+    @patch.object(_Favorites, '_make_request')
+    def test_fetch_aggregated_favorite_data_success(self, mock_make_request):
+        expected_response = self.create_expected_response_payload()
+        mock_make_request.return_value = expected_response
+        client = _Favorites()
+        favorite_payload = client.fetch_favorite_data(self.mock_ticket_number, limit=50, is_batch_pages=True, max_page_count=5)
         self.assert_result(favorite_payload, expected_response)
 
 
