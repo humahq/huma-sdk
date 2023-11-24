@@ -71,8 +71,42 @@ class TestFavoritesClientIntegration(unittest.TestCase):
             self.fetch_favorites()
         return result
 
+    def get_favorites(self):
+        page, limit, favorites_list = 1, 20, []
+        while True:
+            result = self.favorites_client.fetch_favorites(page=page, limit=limit, sort_by="created_data", order_by=-1, question="")
+            if not isinstance(result, dict) or not result.get('favorites'):
+                result = {}
+                break
+            for favorite in result['favorites']:
+                if 'type' in favorite:
+                    favorites_list.append(favorite)
+            if favorites_list:
+                break
+            page += 1
+
+        result['favorites'] = favorites_list
+        return result
+
+    def get_aggregated_favorites(self):
+        limit, favorites_list = 20, []
+        while True:
+            result = self.favorites_client.fetch_favorites(limit=limit, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+            if not isinstance(result, dict) or not result.get('favorites'):
+                result = {}
+                break
+            for favorite in result['favorites']:
+                if 'type' in favorite:
+                    favorites_list.append(favorite)
+            if favorites_list:
+                break
+            page += 1
+
+        result['favorites'] = favorites_list
+        return result
+
     def fetch_favorites(self):
-        result = self.favorites_client.fetch_favorites(page=1, limit=20, sort_by="created_date", order_by=-1, question="")
+        result = self.get_favorites()
         if not result.get('favorites'):
             result = self.handle_empty_favorites()
             if not result:
@@ -84,7 +118,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
             self.visual_type = favorite_object['type']
 
     def fetch_aggregated_favorites(self):
-        result = self.favorites_client.fetch_favorites(limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+        result = self.get_aggregated_favorites()
         if not result.get('favorites'):
             result = self.handle_empty_favorites()
             if not result:

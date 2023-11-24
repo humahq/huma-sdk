@@ -6,10 +6,14 @@ class _Favorites(_Services):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def _validate_page_number(self, page):
+        return page or 1
+
     def _handle_pagination(self, caller_function, page, limit, is_batch_pages, max_page_count, is_answer_data:bool= True, *args, **kwargs):
+        page = self._validate_page_number(page)
         paginator = _Paginator(self, module="favorites", is_answer_data=is_answer_data)
         if is_batch_pages:
-            return paginator.paginate_result(max_page_count, caller_function, limit, *args, **kwargs)
+            return paginator.paginate_result(max_page_count, caller_function, page, limit, *args, **kwargs)
         else:
             kwargs.update({"page": page, "limit": limit})
             return caller_function(*args, **kwargs)

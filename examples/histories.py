@@ -133,18 +133,18 @@ def fetch_answer_data(history_client: HumaSDKHistoriesClient, ticket_number: str
 
 def main():
     history_client = HumaSDKHistoriesClient()
-    ticket_number = "<write your ticket number>"
+    ticket_number = "65606ba63c3bef4a14ea7dbe"
 
     #only applicable if response data is paginated
-    page, limit = 1, 10
-    max_page_count = 10
+    page, limit = 4, 100
+    max_page_count = 4
     is_batch_pages = bool(max_page_count)
 
     # Uncomment the function calls you want to execute
-    history_client.fetch_history(page=page, limit=limit, sort_by=-1, order_by="", question="", is_batch_pages=is_batch_pages, max_page_count=max_page_count)
+    # history_client.fetch_history(page=page, limit=limit, sort_by=-1, order_by="", question="", is_batch_pages=is_batch_pages, max_page_count=max_page_count)
 
     # Example: Fetch history data
-    # fetch_answer_data(history_client, ticket_number, page=page, limit=limit, type=VisualType.TABLE.value, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
+    fetch_answer_data(history_client, ticket_number, page=page, limit=limit, type=VisualType.TABLE.value, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
 
     # Example: Download history visual file
     # download_history_visual(history_client, ticket_number, FileType.PPTX.value, VisualType.BAR_CHART.value)
