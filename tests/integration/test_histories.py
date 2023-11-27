@@ -78,7 +78,7 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         if is_batch_pages:
             result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
         else:
-            result = histories_client.fetch_history(limit=20, sort_by="created_data", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+            result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
 
         if not isinstance(result, dict) or not result.get('histories'):
             return []
@@ -111,7 +111,7 @@ class TestHistoriesClientIntegration(unittest.TestCase):
 
     def fetch_aggregated_history_data(self):
         type = random.choice(self.possible_types) if self.possible_types else ""
-        result = self.histories_client.fetch_history_data(ticket_number=self.ticket_number, limit=20, type=type, is_batch_pages=True, max_page_count=5)
+        result = self.histories_client.fetch_history_data(ticket_number=self.ticket_number, page=1, limit=20, type=type, is_batch_pages=True, max_page_count=5)
         self.expected_visual_type = type
         self.assert_history_data(result)
 

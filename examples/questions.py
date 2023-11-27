@@ -60,7 +60,7 @@ def main():
     ticket_number = submission_status.get('ticket_number')
 
     #only applicable if response data is paginated
-    page, limit = 1, 100
+    page, limit = 1, 10
     max_page_count = 10
     is_batch_pages = bool(max_page_count)
 

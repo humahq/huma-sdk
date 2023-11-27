@@ -89,9 +89,10 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         return result
 
     def get_aggregated_favorites(self):
+        page, max_page_count = 1, 5
         limit, favorites_list = 20, []
         while True:
-            result = self.favorites_client.fetch_favorites(limit=limit, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+            result = self.favorites_client.fetch_favorites(page=page, limit=limit, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=max_page_count)
             if not isinstance(result, dict) or not result.get('favorites'):
                 result = {}
                 break
@@ -100,7 +101,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
                     favorites_list.append(favorite)
             if favorites_list:
                 break
-            page += 1
+            page += max_page_count
 
         result['favorites'] = favorites_list
         return result
@@ -134,7 +135,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         self.assert_favorite_data(result)
 
     def fetch_aggregated_favorite_data(self):
-        result = self.favorites_client.fetch_favorite_data(ticket_number=self.ticket_number, limit=20, type=self.visual_type, is_batch_pages=True, max_page_count=5)
+        result = self.favorites_client.fetch_favorite_data(ticket_number=self.ticket_number, page=1, limit=20, type=self.visual_type, is_batch_pages=True, max_page_count=5)
         self.assert_favorite_data(result)
 
     def delete_favorite(self):

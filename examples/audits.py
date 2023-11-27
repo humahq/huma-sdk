@@ -33,7 +33,7 @@ def main():
     audit_client = HumaSDKAuditsClient()
 
     #only applicable if response data is paginated
-    page, limit = 1, 5
+    page, limit = 1, 10
     max_page_count = 10
     is_batch_pages = bool(max_page_count)
 

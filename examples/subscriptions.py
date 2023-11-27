@@ -95,7 +95,7 @@ def main():
     question = "<write your question here>"
 
     #only applicable if response data is paginated
-    page, limit = 1, 2
+    page, limit = 1, 10
     max_page_count = 10
     is_batch_pages = bool(max_page_count)
 

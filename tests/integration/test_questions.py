@@ -59,7 +59,7 @@ class TestQuestionsClientIntegration(unittest.TestCase):
         self.assert_answer(result)
 
     def fetch_aggregated_answer(self):
-        result = self.questions_client.fetch_answer(ticket_number=self.ticket_number, limit=self.limit, is_batch_pages=True, max_page_count=5)
+        result = self.questions_client.fetch_answer(ticket_number=self.ticket_number, page=self.page, limit=self.limit, is_batch_pages=True, max_page_count=5)
         self.assert_answer(result)
 
     def check_question_status(self, question_status):

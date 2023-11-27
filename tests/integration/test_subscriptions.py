@@ -91,7 +91,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
             return result
 
     def fetch_aggregated_subscriptions(self):
-        result = self.subscriptions_client.fetch_subscriptions(limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
         if not result.get('subscriptions'):
             result = self.handle_empty_subscription()
             if not result:
@@ -108,7 +108,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         self.assert_subscription_data(result)
 
     def fetch_aggregated_subscription_data(self):
-        result = self.subscriptions_client.fetch_subscription_data(subscribed_id=self.subscribed_id, limit=20, is_batch_pages=True, max_page_count=5)
+        result = self.subscriptions_client.fetch_subscription_data(subscribed_id=self.subscribed_id, page=1, limit=20, is_batch_pages=True, max_page_count=5)
         self.assert_subscription_data(result)
 
     def delete_subscription(self):
@@ -123,7 +123,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         result = self.subscriptions_client.create_subscription(ticket_number = self.ticket_number)
         self.assert_create_subscription(result)
 
-    def test_histories_module(self):
+    def test_subscription_module(self):
         result = self.fetch_subscriptions()
         self.fetch_aggregated_subscriptions()
         if result:
