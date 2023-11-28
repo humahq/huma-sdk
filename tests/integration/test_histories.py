@@ -71,11 +71,15 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         self.assertTrue(result)
         self.assertIsInstance(result, dict)
         self.assertIn('download_url', result)
-    
 
-    def get_history_object(self):
+    def get_history_object(self, is_batch_pages=True):
         histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
-        result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
+
+        if is_batch_pages:
+            result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
+        else:
+            result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+
         if not isinstance(result, dict) or not result.get('histories'):
             return []
         result['histories'] = [history for history in result['histories'] if 'type' in history]
@@ -90,9 +94,24 @@ class TestHistoriesClientIntegration(unittest.TestCase):
             self.possible_types = history_object['possible_types']
         return result
 
+    def fetch_aggregated_history(self):
+        result = self.get_history_object(is_batch_pages=True)
+        if result:
+            self.assert_history(result)
+            history_object = result['histories'][0]
+            self.ticket_number = history_object['ticket_number']
+            self.possible_types = history_object['possible_types']
+        return result
+
     def fetch_history_data(self):
         type = random.choice(self.possible_types) if self.possible_types else ""
         result = self.histories_client.fetch_history_data(ticket_number=self.ticket_number, page=1, limit=20, type=type)
+        self.expected_visual_type = type
+        self.assert_history_data(result)
+
+    def fetch_aggregated_history_data(self):
+        type = random.choice(self.possible_types) if self.possible_types else ""
+        result = self.histories_client.fetch_history_data(ticket_number=self.ticket_number, page=1, limit=20, type=type, is_batch_pages=True, max_page_count=5)
         self.expected_visual_type = type
         self.assert_history_data(result)
 
@@ -120,6 +139,7 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         result = self.fetch_history()
         if result:
             self.fetch_history_data()
+            self.fetch_aggregated_history_data()
             status = self.submit_history_visual()
             status = self.check_history_visual_status(status)
             if status == "succeeded":

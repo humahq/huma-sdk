@@ -8,6 +8,7 @@ class TestFetchSubscriptionsUnitCase(unittest.TestCase):
 
     def setUp(self):
         self.keyword_paramaters = dict(page=1, limit=20, sort_by=-1, order_by="", question="")
+        self.aggregated_keyword_parameters = dict(limit=20, sort_by=-1, order_by="", question="", is_batch_pages=True, max_page_count=5)
 
     def create_expected_response_payload(self):
         return {
@@ -29,6 +30,14 @@ class TestFetchSubscriptionsUnitCase(unittest.TestCase):
         mock_make_request.return_value = expected_response
         client = _Subscriptions()
         subscription_payload = client.fetch_subscriptions(**self.keyword_paramaters)
+        self.assert_result(subscription_payload, expected_response)
+
+    @patch.object(_Subscriptions, '_make_request')
+    def test_fetch_aggregated_subscriptions_success(self, mock_make_request):
+        expected_response = self.create_expected_response_payload()
+        mock_make_request.return_value = expected_response
+        client = _Subscriptions()
+        subscription_payload = client.fetch_subscriptions(**self.aggregated_keyword_parameters)
         self.assert_result(subscription_payload, expected_response)
 
 
@@ -81,7 +90,15 @@ class TestFetchSubscriptionDataUnitCase(unittest.TestCase):
         expected_response = self.create_expected_response_payload()
         mock_make_request.return_value = expected_response
         client = _Subscriptions()
-        subscription_payload = client.fetch_subscription_data(self.subscribed_id)
+        subscription_payload = client.fetch_subscription_data(self.subscribed_id, page=1, limit=50)
+        self.assert_result(subscription_payload, expected_response)
+
+    @patch.object(_Subscriptions, '_make_request')
+    def test_fetch_aggregated_subscription_data_success(self, mock_make_request):
+        expected_response = self.create_expected_response_payload()
+        mock_make_request.return_value = expected_response
+        client = _Subscriptions()
+        subscription_payload = client.fetch_subscription_data(self.subscribed_id, limit=50, is_batch_pages=True, max_page_count=5)
         self.assert_result(subscription_payload, expected_response)
 
 

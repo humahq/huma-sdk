@@ -76,9 +76,22 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
             self.create_subscription()
             self.fetch_subscriptions()
         return result
-    
+
     def fetch_subscriptions(self):
         result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, sort_by="created_date", order_by=-1, question="")
+        if not result.get('subscriptions'):
+            result = self.handle_empty_subscription()
+            if not result:
+                return result
+        else:
+            self.assert_subscriptions(result)
+            subscribe_object = result['subscriptions'][0]
+            self.subscribed_id = subscribe_object['subscribed_id']
+            self.question = subscribe_object['question']
+            return result
+
+    def fetch_aggregated_subscriptions(self):
+        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
         if not result.get('subscriptions'):
             result = self.handle_empty_subscription()
             if not result:
@@ -94,6 +107,10 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         result = self.subscriptions_client.fetch_subscription_data(subscribed_id=self.subscribed_id, page=1, limit=20)
         self.assert_subscription_data(result)
 
+    def fetch_aggregated_subscription_data(self):
+        result = self.subscriptions_client.fetch_subscription_data(subscribed_id=self.subscribed_id, page=1, limit=20, is_batch_pages=True, max_page_count=5)
+        self.assert_subscription_data(result)
+
     def delete_subscription(self):
         result = self.subscriptions_client.delete_subscription(subscribed_id=self.subscribed_id)
         self.assertFalse(result)
@@ -106,10 +123,12 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         result = self.subscriptions_client.create_subscription(ticket_number = self.ticket_number)
         self.assert_create_subscription(result)
 
-    def test_histories_module(self):
+    def test_subscription_module(self):
         result = self.fetch_subscriptions()
+        self.fetch_aggregated_subscriptions()
         if result:
             self.fetch_subscription_data()
+            self.fetch_aggregated_subscription_data()
             self.fetch_subscription_status()
             self.delete_subscription()
 

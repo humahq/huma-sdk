@@ -40,12 +40,24 @@ print("calculation_status:", calculation_status)
 - **Parameters**:
   - `ticket_number`: A unique identifier associated with a specific answer calculation process, returned by submit_question function.
   - `page`(optional): It represents the requested page number in pagination.
-  - `limit`(optional): It represents the maximum number of items to be included per page
+  - `limit`(optional): It represents the maximum number of items to be included per page.
+  - `is_batch_pages`(optional): It Specifies whether records should be fetched in aggregated batch pages. When set to `True`, The function retrieves data in smaller, paginated chunks, starting from the specified page (`page` parameter) and continuing up to a total of `max_page_count` pages, each containing a maximum of `limit` items.
+  - `max_page_count`(optional): It represents the maximum number of pages to be fetched in one function call when `is_batch_pages` is set to `True`.
 
 - **Example Usage**:
 
 ```python
+# Retrieve aliases with traditional pagination
 answer = questions_client.fetch_answer(ticket_number="<write ticket number returned from submit question>", page=1, limit=20)
 print("answer:", answer)
+
+# Retrieve aliases with aggregated batch pages
+answer = questions_client.fetch_answer(ticket_number="<write ticket number returned from submit question>", page=1, limit=20, is_batch_pages=True, max_page_count=10)
+print("answer (Batch Pages):", answer)
 ```
+
+**Notes**:
+- When using `is_batch_pages=True`, the function fetches data in aggregated batch pages, each containing a maximum of `limit` items.
+- The parameter `max_page_count` defines the maximum number of pages to be fetched in one function call when using batch pages. This allows you to control the total number of pages retrieved, providing a more efficient way to manage large datasets.
+- For more information about pagination [see here](pagination.md).
 

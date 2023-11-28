@@ -8,13 +8,13 @@ import time
 class TestQuestionsClientIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.question = "Top sponsors in nsclc"
+        self.question = "Planned patient enrollment for pediatric ewing's sarcoma trials"
         self.commands = []
         self.page, self.limit = 1, 20
         self.expected_questions_status = ("succeeded", "processing", "accepted", "rejected")
         self.expected_answer_keys = ('type', "data")
         self.status_message = {
-            "accepted": 'Question accepted successfully', 
+            "accepted": 'Question accepted successfully',
             "rejected": "Question rejected  due to an error, please try again"
         }
         self.questions_client = huma_sdk.session(service_name="Questions", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
@@ -43,7 +43,7 @@ class TestQuestionsClientIntegration(unittest.TestCase):
         self.assertIn("ticket_number", result)
         ticket_number = result['ticket_number']
         self.assertEqual(ticket_number, self.ticket_number)
-    
+
     def assert_answer(self, result):
         self.assertTrue(result)
         self.assertIsInstance(result, dict)
@@ -56,6 +56,10 @@ class TestQuestionsClientIntegration(unittest.TestCase):
 
     def fetch_answer(self):
         result = self.questions_client.fetch_answer(ticket_number=self.ticket_number, page=self.page, limit=self.limit)
+        self.assert_answer(result)
+
+    def fetch_aggregated_answer(self):
+        result = self.questions_client.fetch_answer(ticket_number=self.ticket_number, page=self.page, limit=self.limit, is_batch_pages=True, max_page_count=5)
         self.assert_answer(result)
 
     def check_question_status(self, question_status):
