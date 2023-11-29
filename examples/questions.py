@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import sys
 
 import huma_sdk
 from huma_sdk.exceptions import UnauthorizedException, ResourceNotExistsError
@@ -50,7 +51,21 @@ class HumaSDKQuestionsClient:
             self.handle_exception(e)
 
 
+def get_question():
+    # Check if an argument was passed
+    if len(sys.argv) > 1:
+        # The first argument is always the script name, so the second one (index 1) is the parameter you passed
+        question = sys.argv[1]
+        print(f"Received question: {question}")
+    else:
+        print("No question was passed.  using a default question of 'Top Sponsors in NSCLC'")
+        print("You can pass a question as an argument to this script, e.g. 'python questions.py \"Top Sponsors in NSCLC\"'")
+        question = "Top Sponsors in NSCLC"
+    return question
+
 def main():
+    question = get_question()
+
     huma_client = HumaSDKQuestionsClient(service_name="Questions")
 
     # Example usage
@@ -65,8 +80,8 @@ def main():
     is_batch_pages = bool(max_page_count)
 
     if 'error_message' in submission_status:
-        print(f'Failed to submit question, because {submission_status["error_message"]}')
-        return
+        print(f'Failed to submit question {question}, because {submission_status["error_message"]}')
+        exit(1)
 
     while True:
         print(f"Checking Status of '{ticket_number}' ticket number")
