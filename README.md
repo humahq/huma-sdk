@@ -97,6 +97,12 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
     The system will submit the question, poll for the results and then display and save them.
 
+Here is a video of the above steps:
+
+<a href="https://drive.google.com/file/d/1xcYfPcwdmcmElH8R7LfNe2-AMgj2rXJj/view?usp=drive_link">
+    <img src="images/huma-sdk-polling-still.png" alt="Demo Video" style="width:640px%; height:360;">
+</a>
+
 ## Webhooks
 
 There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
