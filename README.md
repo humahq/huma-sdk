@@ -99,7 +99,7 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 
 Here is a video of the above steps:
 
-<a href="https://drive.google.com/file/d/1xcYfPcwdmcmElH8R7LfNe2-AMgj2rXJj/view?usp=drive_link">
+<a href="https://drive.google.com/file/d/1xcYfPcwdmcmElH8R7LfNe2-AMgj2rXJj/view?usp=drive_link" target="_blank">
     <img src="images/huma-sdk-polling-still.png" alt="Demo Video" style="width:640px%; height:360;">
 </a>
 
