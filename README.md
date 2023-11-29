@@ -45,32 +45,41 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
 - [**Webhooks**](docs/webhooks.md): Managing the webhook callbacks.
   - `activate_webhook_client`: Activate flask app on local environment for receiving webhook callbacks
 
-## Quickstart
+## Quickstart - Polling
 
-### Setup and Activate a Python Envionment for Mac or Linux
+### Step-by-Step Instructions to Setup and Activate a Python Envionment for Mac, Linux or WSL mode in Windows
 
-1. Run the environment script from the root directory of the project:
+1. Register a username and create a API key on the front end.  
+    - Navigate to [https://demo.huma.ai](https://demo.huma.ai),
+    - Register your email and provide a password.  Only approved emails can register.
+    - Receive verification code in email
+    - Return to registration code and enter your verification code and click 'Confirm Account,'
+    - Naviate to hamburger menu > Developer Settings > API Tokens > Create a token with Questions permission and save out the api key provided.
+
+2. Open a linux based terminal.
+
+3. Run the environment creation script from the root directory of the project linux based environment:
 
     ```bash
+    cd huma-sdk
     /bin/bash scripts/build_conda.sh
     # follow the instructions
-    ```
-
-2. Activate your conda environment
-
-    ```bash
     conda activate huma-sdk
     ```
 
-3. Create your .env
+4. Create your .env to hold your API key and other settings
 
     Before you start, create a `.env` file from `sample.env` and update it with your credentials.
 
     ```bash
+    cp sample.env .env
+    vim .env  # then i to enter insert mode
+    # change the first two items in your .env file
     API_URL=<api url>
     API_SECRET_KEY=<api token>
     API_CALLBACK_AUTH=<authorization token for webhook>
     FLASK_APP=examples/webhooks:main
+    # ':wq<enter>' to save out your changes
     ```
 
       Access and Config Info Explanations
@@ -80,11 +89,14 @@ This SDK simplifies the interaction with the HUMA-API, making it easy to integra
       - API_CALLBACK_AUTH is an authorization code that you provide when you register a webhook in `Huma Platform > Hamburger menu > Developer Settings > Webhooks`
       - FLASK_APP=examples/webhooks:main is for the webhook client.  If you run the debugger profile form .vscode/launch.json in the VS Code debugger, this directs Flask where to start the code from.
 
-4. Run the Questions Script (or another one)
+5. Run the Questions Script (or another one)
 
     ```bash
-    python examples/questions.py
+    python examples/questions.py "top sponsors in nsclc"
     ```
 
-5. There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.
+    The system will submit the question, poll for the results and then display and save them.
 
+## Webhooks
+
+There are [instructions](docs/webhooks.md) and [example code](examples/webhooks.py) on how to setup a webhook callback to receive callback notifications after you call an API submit endpoint.

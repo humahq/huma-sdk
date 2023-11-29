@@ -33,6 +33,6 @@ QUESTIONS_LIST = [
     "list code information of exclusion criteria analysis for active phase 3 Acute Myelogenous Leukemia trials as json"
     ]
 
-COMMANDS = []
-# COMMANDS = ["no answer cache",
-#             "no operator cache"]
+# COMMANDS = []
+COMMANDS = ["no answer cache",
+            "no operator cache"]
