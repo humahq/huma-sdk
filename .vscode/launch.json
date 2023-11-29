@@ -28,7 +28,8 @@
             "console": "integratedTerminal",
             "envFile": "${workspaceFolder}/.env",
             "cwd": "${workspaceFolder}",
-            "justMyCode": false
+            "justMyCode": false,
+            "args": ["exclusion criteria analysis for active phase 3 obesity"]
         }
     ]
 }
