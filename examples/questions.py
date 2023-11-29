@@ -74,7 +74,7 @@ def main():
 
     #only applicable if response data is paginated
     page, limit = 1, 10
-    max_page_count = 10
+    max_page_count = 100
     is_batch_pages = bool(max_page_count)
 
     if 'error_message' in submission_status:
