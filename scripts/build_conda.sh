@@ -84,7 +84,7 @@ if conda env list | grep -q "^$conda_env_name"; then
     conda run -n $conda_env_name scripts/build_conda_install.sh
   fi
 else
-  conda create --name $conda_env_name python=3.10 -y
+  conda create --name $conda_env_name python=3.11 -y
   conda run -n $conda_env_name scripts/build_conda_install.sh
   echo "Activate your huma-sdk environment with \"conda activate $conda_env_name\""
 fi
