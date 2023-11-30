@@ -29,15 +29,11 @@ class _Paginator:
 
     def _log_fetch_info(self, next_page, limit, total_records):
         self.logger.info(f"Successfully fetched {limit} records out of {total_records}. Fetching records for page {next_page}.")
-        self.logger.info("Next fetch in 5 seconds...")
-        time.sleep(5)
 
     def _log_fetch_page_info(self, page, page_limit, pages_to_fetch, total_records=None):
         start_record_index =  ((page-1)*page_limit)+1
         if page != pages_to_fetch:
             self.logger.info(f"Fetched records from index {start_record_index} to {page*page_limit} on page {page}.")
-            self.logger.info( f"Next fetch for page {page+1} in 5 seconds.")
-            time.sleep(5)
         else:
             self.logger.info(f"Fetched records from index {start_record_index} to {((page-1)*page_limit)+total_records} on page {page}.")
             self.logger.info(f"Successfully fetched all the records of this batch.")

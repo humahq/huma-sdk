@@ -5,13 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Webook Callback",
+            "name": "Webook Callback - Debug",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "args": [
                 "run",
                 "-p",
+                "5001",
+                "--host",
+                "0.0.0.0"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "jinja": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Webook Callback",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "huma_sdk.app_wrapper:asgi_app",
+                "--port",
                 "5001",
                 "--host",
                 "0.0.0.0"

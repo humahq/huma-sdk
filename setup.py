@@ -19,13 +19,15 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'flask',
+        'flask[async]',
         'requests',
         'bson',
         'nose2==0.13.0',
         'nose2[coverage_plugin]',
         'python-dotenv',
-        'pygments'
+        'pygments',
+        'uvicorn',
+        'werkzeug'
     ],
     license='Proprietary',
     keywords='',
