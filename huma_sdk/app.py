@@ -8,6 +8,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import TerminalFormatter
 import json, threading
 import asyncio
+import timeit
 
 load_dotenv()
 
@@ -113,6 +114,7 @@ def subscribed_answer(payload):
 
 @app.route('/api/webhook-question-answered', methods=['POST'])
 def question_answered_hook():
+    start_time = timeit.default_timer()
     logging.info("Received the webhook callback for question answered")
 
     auth_header = request.headers.get('Authorization')
@@ -134,7 +136,9 @@ def question_answered_hook():
         # Start the background task when the Flask app starts
         logging.info("Starting background thread for fetching the answer")
         start_background_thread(answer_payload)
-
+        end_time = timeit.default_timer()
+        duration = end_time - start_time
+        print(f"webhook-question-answered took {duration:.2f} seconds.")
         return jsonify({}), 200
 
     except ValueError as ve:
