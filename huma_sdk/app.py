@@ -6,9 +6,9 @@ import huma_sdk
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import TerminalFormatter
-import json
+import json, threading
 import asyncio
-from threading import Thread
+import timeit
 
 load_dotenv()
 
@@ -17,61 +17,104 @@ API_CALLBACK_AUTH=os.getenv("API_CALLBACK_AUTH")
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-def start_async_task(task_func, payload):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+# Constants
+PAGE, LIMIT = 1, 100
+MAX_PAGE_COUNT = 100
+IS_BATCH_PAGES = bool(MAX_PAGE_COUNT)
 
-    # Directly await the coroutine function
+
+async def background_task(response):
+    module = response.get('module')
+    if module in {'question', 'subscription'}:
+        payload = response.get('payload')
+        async_functions = {
+            "question": async_fetch_answer,
+            "subscription": subscribed_answer
+        }
+        async_functions[module](payload)
+
+
+
+def start_background_thread(payload):
+    background_thread = threading.Thread(target=lambda: asyncio.run(background_task(payload)))
+    background_thread.daemon = True
+    background_thread.start()
+
+
+def save_result_to_json(data, filename):
+    """Save the result to a JSON file."""
+
+    os.makedirs("output", exist_ok=True)
+    with open(f'output/{filename}.json', 'w') as f:
+        json.dump(data, f, indent=4)
+
+    print(highlight(json.dumps(data, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+    print(f"Result saved to output/{filename}.json")
+
+
+def async_fetch_answer(payload):
+    """Retrieve answers asynchronously."""
     try:
-        question=payload.get('question', '')
-        loop.run_until_complete(task_func(payload))
-        print(f"async pagination to get data on {question} - task completed successfully")
-    except Exception as e:
-        print(f"error: {str(e)}")
-        pass
-    finally:
-        loop.close()
-    pass
+        question_status = payload.get('question_status', '')
+        question = payload.get('question', '')
+        ticket_number = payload.get("ticket_number")
 
-async def async_fetch_answer(payload):
-    #only applicable if response data is paginated
-    page, limit = 1, 100
-    max_page_count = 100
-    is_batch_pages = bool(max_page_count)
-
-    question_status = payload.get('question_status', '')
-    question = payload.get('question', '')
-    ticket_number = payload.get("ticket_number")
-    try:
         if 'rejected' in question_status:
-            print(f'question "{question}" failed to process.')
+            print(f'Question with ticket number "{ticket_number}" failed to process.')
+
         elif question_status == 'succeeded':
             questions_client = huma_sdk.session(service_name="Questions")
-            print(f"getting result of question with '{ticket_number}' ticket number")
-            result_response = questions_client.fetch_answer(ticket_number=ticket_number, page=page, \
-                limit=limit, is_batch_pages=is_batch_pages, max_page_count=max_page_count)
+            print(f"Getting result of question with ticket number '{ticket_number}'")
+            result_response = questions_client.fetch_answer(ticket_number=ticket_number, page=PAGE, \
+                limit=LIMIT, is_batch_pages=IS_BATCH_PAGES, max_page_count=MAX_PAGE_COUNT)
+
+            if result_response.get('error_response'):
+                print(highlight(json.dumps(result_response, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+                return False
 
             sanitized_question = ''.join(e for e in question if e.isalnum() or e.isspace()).replace(' ', '_')
+            save_result_to_json(result_response, f'{sanitized_question}_result')
 
-            # Create 'output' directory if it doesn't exist
-            os.makedirs("output", exist_ok=True)
-
-            # Save the result to a JSON file
-            with open(f'output/{sanitized_question}_result.json', 'w') as f:
-                json.dump(result_response, f, indent=4)
-            print(highlight(json.dumps(result_response, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
-            print(f"result saved to output/{sanitized_question}_result.json")
         else:
-            print(f"unrecognized question status {question_status}")
-            print(highlight(json.dumps(result_response, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+            print(f"Unrecognized question status {question_status}")
+
     except Exception as e:
-        logging.exception("an error occurred in async task")
+        logging.exception("An error occurred in async_fetch_answer")
         return False
+
     return True
-    # end of async_fetch_answer
+
+
+def subscribed_answer(payload):
+    """Retrieve subscribed answers asynchronously."""
+    try:
+        href = payload.get("links", [{}])[0].get('href', "")
+        subscribed_id = href.split('/')[-2] if '/' in href else ""
+
+        if not subscribed_id:
+            print(f'Subscribed Question with "{subscribed_id}" id Not Found.')
+
+        subscription_client = huma_sdk.session(service_name="Subscriptions")
+        print(f"Getting result of subscribed question with ID '{subscribed_id}'")
+        subscribed_visual = subscription_client.fetch_subscription_data(subscribed_id=subscribed_id, page=PAGE, \
+                limit=LIMIT, is_batch_pages=IS_BATCH_PAGES, max_page_count=MAX_PAGE_COUNT)
+
+        if subscribed_visual.get('error_message'):
+            print(highlight(json.dumps(subscribed_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+            return False
+
+        save_result_to_json(subscribed_visual, f'{subscribed_id}_result')
+
+    except Exception as e:
+        logging.exception("An error occurred in async_subscribed_answer")
+        return False
+
+    return True
+
 
 @app.route('/api/webhook-question-answered', methods=['POST'])
 def question_answered_hook():
+    start_time = timeit.default_timer()
     logging.info("Received the webhook callback for question answered")
 
     auth_header = request.headers.get('Authorization')
@@ -85,9 +128,17 @@ def question_answered_hook():
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
+        logging.info(f"Webhook processed successfully with payload {request.json}\n")
         payload = request.json
+        print(highlight(json.dumps(payload, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+        answer_payload = { "module": "question", "payload": payload }
 
-        start_async_task(async_fetch_answer, payload)
+        # Start the background task when the Flask app starts
+        logging.info("Starting background thread for fetching the answer")
+        start_background_thread(answer_payload)
+        end_time = timeit.default_timer()
+        duration = end_time - start_time
+        print(f"webhook-question-answered took {duration:.2f} seconds.")
         return jsonify({}), 200
 
     except ValueError as ve:
@@ -149,15 +200,14 @@ def subscription_updated_hook():
 
     try:
         logging.info(f"Webhook processed successfully with payload {request.json}\n")
-        subscription_client = huma_sdk.session(service_name="Subscriptions")
         payload = request.json
-        href = payload.get("links", [{}])[0].get('href',"")
-        subscribed_id = href.split('/')[-2] if '/' in href else ""
-        if subscribed_id:
-            subscribed_visual = subscription_client.fetch_subscription_data(subscribed_id=subscribed_id)
-            print(highlight(json.dumps(subscribed_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
-        else:
-            print('Ticket Number Not Found')
+        print(highlight(json.dumps(payload, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+        subscription_payload = { "module": "subscription", "payload": payload }
+
+        # Start the background task when the Flask app starts
+        logging.info("Starting background thread for fetching the answer")
+        start_background_thread(subscription_payload)
+
         return jsonify({}), 200
 
     except ValueError as ve:
