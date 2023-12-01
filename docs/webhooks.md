@@ -10,6 +10,10 @@ You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05
 | Histories  | [Visualized](https://humahq.stoplight.io/docs/huma-api/hg2usrjd5e4yr-get-history-visual)    |When this event is triggered, it retrieves visual representations of answers, such as PDFs, CSVs, or PPTs, in a JSON response that contains downloadable links. |
 | Subscriptions | [AnswerUpdated](https://humahq.stoplight.io/docs/huma-api/53obj41n78909-create-subscriptions) | This event is triggered when there is an update to the answer of a question that a user has subscribed to. Subscriptions allow users to receive notifications or updates when there are changes or improvements to the answers related to their specific questions. When this event occurs, it signifies that the answer to a subscribed question has been modified or enhanced in some way.|
 
+Note:- We will transmit the designated webhook events to the selected webhooks via the secure and reliable HTTP POST method. As a result, it is essential to establish webhooks capable of receiving POST requests.
+
+Danger:- All webhooks should return response code 200 within 5 seconds. If this does not happen, the call to the webhook client will be considered a failed attempt. We attempt to deliver the message a total of three times. If you do any processing of the webhook callback before returning a response code 200, you should offload it to a thread. See the sample python code below for computed as an example.
+
 ### Webhook Functions
 
 #### Function 1: `activate_webhook_client`
@@ -18,7 +22,7 @@ You can configure a [Webhook](https://humahq.stoplight.io/docs/huma-api/d77fdd05
 - **Parameters**:
   - `debug` (optional): Enabling debug mode provides detailed error messages and allows automatic code reloading when changes are detected. Use this mode in a development environment, not in a production setting.
   - `port` (optional): Defines the port on which the Flask application will listen for incoming requests. By default, the Flask application runs on port 5000.
- 
+
 - **Example Usage**:
 
 ```python
@@ -42,7 +46,7 @@ Follow these steps to set up the webhook client (for local use):
 3. Obtain your ngrok authentication token from the ngrok website and register it on your local machine:
 
     ```bash
-    ngrok config add-authtoken <insert your auth-token>  
+    ngrok config add-authtoken <insert your auth-token>
     Authtoken saved to configuration file: /Users/<username>/Library/Application Support/ngrok/ngrok.yml
     ```
 
@@ -60,7 +64,7 @@ Follow these steps to set up the webhook client (for local use):
    - In the event box put `Computed`
    - In the authorization box put a made up secret code that you also put in your .env file as the value for the environment variable for `API_CALLBACK_AUTH`
    - Set `FLASK_APP` to your webhooks code.  Something like `FLASK_APP=examples/webhooks:main` which points to the function `main` in the file `examples/webhooks.py`
-  
+
 6. Trigger your webhook callback by [submitting a question](../examples/webhooks.py).
 
 ### Create a Webhook Client Using SDK
@@ -159,7 +163,6 @@ def async_fetch_answer(payload):
         return False
 
     return True
-
 
 def subscribed_answer(payload):
     """Retrieve subscribed answers asynchronously."""
