@@ -20,13 +20,12 @@ Danger:- All webhooks should return response code 200 within 5 seconds. If this 
 
 - **Description**: This function allows users to activate the webhook client locally, enabling it to listen to incoming webhook requests.
 - **Parameters**:
-  - `debug` (optional): Enabling debug mode provides detailed error messages and allows automatic code reloading when changes are detected. Use this mode in a development environment, not in a production setting.
   - `port` (optional): Defines the port on which the Flask application will listen for incoming requests. By default, the Flask application runs on port 5000.
 
 - **Example Usage**:
 
 ```python
-webhooks_client.activate_webhook_client(debug=True, port=5000)
+webhooks_client.activate_webhook_client(port=5000)
 ```
 
 ### Setup for Receiving Webhook Callbacks
