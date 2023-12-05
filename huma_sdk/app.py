@@ -1,14 +1,12 @@
-from flask import Flask, request, jsonify, copy_current_request_context
-import os
-import logging
-from dotenv import load_dotenv
 import huma_sdk
-from pygments import highlight
-from pygments.lexers import JsonLexer
-from pygments.formatters import TerminalFormatter
+import os, logging
 import json, threading
-import asyncio
-import timeit
+import asyncio, timeit
+from pygments import highlight
+from dotenv import load_dotenv
+from pygments.lexers import JsonLexer
+from flask import Flask, request, jsonify
+from pygments.formatters import TerminalFormatter
 
 load_dotenv()
 
@@ -32,7 +30,6 @@ async def background_task(response):
             "subscription": subscribed_answer
         }
         async_functions[module](payload)
-
 
 
 def start_background_thread(payload):
@@ -144,14 +141,16 @@ def question_answered_hook():
     except ValueError as ve:
         logging.error(f"ValueError: {ve}")
         return jsonify({"error": str(ve)}), 400
+
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
-        return jsonify({"error": "An error occurred"}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 
 @app.route('/api/webhook-history-visualized', methods=['POST'])
 def history_visualized_hook():
+    start_time = timeit.default_timer()
     logging.info("Received the webhook callback for history answer visualized")
 
     auth_header = request.headers.get('Authorization')
@@ -172,6 +171,9 @@ def history_visualized_hook():
         history_visual = histories_client.fetch_history_visual_result(conversion_id)
         print(f'Copy the link from the result and paste in your favorite browser for downloading the visual file')
         print(highlight(json.dumps(history_visual, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter()))
+        end_time = timeit.default_timer()
+        duration = end_time - start_time
+        print(f"webhook-history-visualized took {duration:.2f} seconds.")
         return jsonify({}), 200
 
     except ValueError as ve:
@@ -181,11 +183,12 @@ def history_visualized_hook():
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
-        return jsonify({"error": "An error occurred"}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 
 @app.route('/api/webhook-subscription-updated', methods=['POST'])
 def subscription_updated_hook():
+    start_time = timeit.default_timer()
     logging.info("Received the webhook callback for subscription answer updated")
 
     auth_header = request.headers.get('Authorization')
@@ -207,7 +210,9 @@ def subscription_updated_hook():
         # Start the background task when the Flask app starts
         logging.info("Starting background thread for fetching the answer")
         start_background_thread(subscription_payload)
-
+        end_time = timeit.default_timer()
+        duration = end_time - start_time
+        print(f"webhook-subscription-updated took {duration:.2f} seconds.")
         return jsonify({}), 200
 
     except ValueError as ve:
@@ -217,11 +222,19 @@ def subscription_updated_hook():
     except Exception as e:
         # Handle other exceptions
         logging.exception("An error occurred")
-        return jsonify({"error": "An error occurred"}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
 @app.route('/', methods=['GET'])
 def hello():
     return "hello!"
 
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    import uvicorn
+    from asgiref.wsgi import WsgiToAsgi
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
+    wsgi_app = DispatcherMiddleware(app)
+    asgi_app = WsgiToAsgi(wsgi_app)
+    uvicorn.run(asgi_app, host="0.0.0.0", port=5001)
