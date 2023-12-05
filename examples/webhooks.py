@@ -14,9 +14,9 @@ class HumaSDKWebhooksClient:
         else:
             print("An unexpected error occurred:", exception)
 
-    def activate_webhook_client(self, debug: bool=True, port: int=5000):
+    def activate_webhook_client(self, port: int=5000):
         try:
-            self.webhooks_client.activate_webhook_client(debug=debug, port=port)
+            self.webhooks_client.activate_webhook_client(port=port)
         except Exception as e:
             self.handle_exception(e)
 
@@ -25,9 +25,8 @@ def main():
     webhooks_client = HumaSDKWebhooksClient()
 
     # Example usage
-    debug: bool = "<Whether to enable debug mode>"
     port: int = "<write port number to use>"
-    webhooks_client.activate_webhook_client(debug=True, port=5001)
+    webhooks_client.activate_webhook_client(port=5001)
 
 if __name__ == "__main__":
     main()
