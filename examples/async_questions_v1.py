@@ -121,7 +121,7 @@ def main():
         ]
     }
 
-    with ThreadPoolExecutor(max_workers=len(questions_list['questions'])) as executor:
+    with ThreadPoolExecutor(max_workers=len(10)) as executor:
         # Submit each question list to the ThreadPoolExecutor
         futures = [executor.submit(submit_questions, q_list) for q_list in questions_list['questions']]
 
