@@ -27,7 +27,9 @@ setup(
         'python-dotenv',
         'pygments',
         'uvicorn',
-        'werkzeug'
+        'werkzeug',
+        'pydantic',
+        'websocket-client'
     ],
     license='Proprietary',
     keywords='',
