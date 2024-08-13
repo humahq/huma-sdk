@@ -28,6 +28,7 @@ setup(
         'pygments',
         'uvicorn',
         'werkzeug',
+        'pydantic',
         'websocket-client'
     ],
     license='Proprietary',
