@@ -41,3 +41,5 @@ generate_test_suggestions.py
 
 .vscode/settings.json
 output/*.json
+
+_cache/

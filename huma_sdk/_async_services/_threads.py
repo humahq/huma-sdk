@@ -1,13 +1,19 @@
 from typing import List
-from huma_sdk._async_resources import _AsyncServices
+from huma_sdk._async_resources import ChatServiceV1, ChatServiceV2
 
-class _Threads(_AsyncServices):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class _Threads:
+    def __init__(self, service_name=None, api_version="v1", **kwargs):
+        # Initialize the appropriate chat service based on the API version
+        if api_version == "v1":
+            self.chat_service = ChatServiceV1(service_name=service_name, **kwargs)
+        elif api_version == "v2":
+            self.chat_service = ChatServiceV2(service_name=service_name, **kwargs)
+        else:
+            raise ValueError(f"Unsupported API version: {api_version}")
 
 
     def _create(self, topic: str=None, **kwargs):
-        self._make_async_request(topic=topic, *kwargs)
+        self.chat_service.start_new_chat(topic=topic, *kwargs)
 
 
     def create(self, *args, **kwargs):
