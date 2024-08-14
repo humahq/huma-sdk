@@ -12,7 +12,6 @@ class QuestionQueue:
         :param question: The question to be added.
         """
         self.queue.append(question)
-        print(f"Question added to the queue: {question}")
 
     def pop(self) -> str:
         """
@@ -23,9 +22,7 @@ class QuestionQueue:
         if self.is_empty():
             return None
 
-        popped_question = self.queue.popleft()
-        print(f"Question popped from the queue: {popped_question}")
-        return popped_question
+        return self.queue.popleft()
 
     def peek(self) -> str:
         """
