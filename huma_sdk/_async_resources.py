@@ -56,6 +56,14 @@ class BaseChatService(SubscriptionClient, AppsyncSchemaClient):
         response = self.execute_gql(query, variables)
         return response['data']['getAnswerData']
 
+    def determine_topic(self, question: list, topic: str):
+        if not topic:
+            if isinstance(question[0], str):
+                topic = question[0]
+            elif isinstance(question[0], dict):
+                topic = question[0].get('question')
+
+        return topic
 
 class ChatServiceV1(BaseChatService):
     def __init__(self, service_name=None, **kwargs):
@@ -99,6 +107,13 @@ class ChatServiceV1(BaseChatService):
         response = self.execute_gql(query, variables)
         return response['data']['GetMessages']
 
+    def verify_thread_id(self, thread_id):
+        response = self.get_messages(thread_id)
+        if not response:
+            raise Exception("Wrong thread Id")
+
+        self.chat_id = thread_id
+
     def start_new_chat(self, topic=None, agent=None):
         query = self.get_schema(type="NewChat", version=self.api_version, topic=topic, agent=agent)
         response = self.execute_gql(query)
@@ -141,14 +156,10 @@ class ChatServiceV1(BaseChatService):
 
     def ask_question(self, question: list, thread_id: str=None, topic: str = None, agent: str="Home", event_handler: EventHandler=None):
         if not thread_id:
-            topic = topic or (question[0] if isinstance(question, list) else question)
+            topic = self.determine_topic(question, topic)
             self.start_new_chat(topic=topic, agent=agent)
         else:
-            response = self.get_messages(thread_id)
-            if not response:
-                raise Exception("Wrong thread Id")
-            else:
-                self.chat_id = thread_id
+            self.verify_thread_id(thread_id)
 
         self.agent = agent
         variables = {'chatId': self.chat_id}
@@ -199,6 +210,14 @@ class ChatServiceV2(BaseChatService):
         author_metadata = response['data']['newChat']['author']['metadata']
         self.user_details = json.loads(author_metadata).get('user_details')
 
+    def verify_thread_id(self, thread_id):
+        response = self.get_messages(thread_id)
+        if not response:
+            raise Exception("Wrong thread Id")
+
+        self.chat_id = thread_id
+        self.user_details = response['chat_details']['users'][0]
+
     def get_send_message_variables(self, **kwargs):
         return SendMessageInput(**{
             "chat_id": self.chat_id,
@@ -243,20 +262,10 @@ class ChatServiceV2(BaseChatService):
 
     def ask_question(self, question: list, thread_id: str=None, topic: str=None, agent: str="Home", event_handler: EventHandler=None):
         if not thread_id:
-            if not topic:
-                if isinstance(question[0], str):
-                    topic = question[0]
-                elif isinstance(question[0], dict):
-                    topic = question[0].get('question')
-
+            self.determine_topic(question, topic)
             self.start_new_chat(topic=topic, agent=agent)
         else:
-            response = self.get_messages(thread_id)
-            if not response:
-                raise Exception("Wrong thread Id")
-            else:
-                self.chat_id = thread_id
-                self.user_details = response['chat_details']['users'][0]
+            self.verify_thread_id(thread_id)
 
         self.event_handler = event_handler
         variables = {'user_id': self.user_details.get('user_id')}
