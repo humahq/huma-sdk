@@ -13,11 +13,21 @@ class _AsyncQuestions:
             raise ValueError(f"Unsupported API version: {api_version}")
 
     def get_questions_list(self, question, commands):
-        if isinstance(question, str):
-            question = [question]
-
         command_to_add = ''.join(f" {command}" for command in commands)
-        return [f"{q}{command_to_add}" for q in question]
+
+        if isinstance(question, str):
+            return [f"{question}{command_to_add}"]
+
+        elif isinstance(question, list):
+            if isinstance(question[0], dict):
+                for q in question:
+                    q["question"] = f"{q.get('question')}{command_to_add}"
+
+                return question
+            elif isinstance(question[0], str):
+                return [f"{q}{command_to_add}" for q in question]
+
+        return question
 
     def _submit_question(self, question: str = None, commands: List[str] = [], **kwargs):
         # Construct the full question string
