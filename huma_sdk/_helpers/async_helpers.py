@@ -38,10 +38,10 @@ class SubscriptionClient:
         Args:
             ws (websocket.WebSocketApp): The WebSocketApp instance.
         """
-        self.logger.info(f"{GREEN}Connection built{RESET}")
         init = {'type': 'connection_init',"payload": {"connectionTimeoutMs":300000000}}
         init_conn = json.dumps(init)
         ws.send(init_conn)
+        self.logger.info(f"{GREEN}Connection built{RESET}")
 
     def on_error(self, ws, error):
         """
@@ -175,9 +175,10 @@ class AppsyncSchemaClient:
 
     def new_chat_mutation_v1(self, **kwargs):
         topic = kwargs.get('topic')
+        agent = kwargs.get('agent')
         return f'''
             mutation {{
-                newChat(topic: "{topic or 'New Chat'}") {{
+                newChat(topic: "{topic or 'New Chat'}", agent: "{agent or 'Home'}") {{
                     id
                 }}
             }}
@@ -190,66 +191,85 @@ class AppsyncSchemaClient:
                     event_type
                     id
                     created_at
+                    user_id
                     event_metadata{
-                    event_message
-                    event_data{
-                        id
-                        question_id
-                        answer_id
-                        question_version_number
-                        is_visually_hidden
-                        created_at
-                        recepient
-                        message_metadata{
-                        focus
-                        sources
-                        processing_status{
-                            state
-                            reason
-                        }
-                        message_intent
-                        answer_version_number
-                        }
-                        sub_message_metadata{
-                        id
-                        delta{
-                            delta_data_type
-                            delta_type
-                            delta
+                        event_message
+                        event_data{
+                            id
+                            question_id
+                            answer_id
+                            question_version_number
+                            is_visually_hidden
                             created_at
-                            updated_at
+                            recepient
+                            message_metadata{
+                                focus
+                                sources
+                                processing_status{
+                                    state
+                                    reason
+                                }
+                                message_intent
+                                answer_version_number
+                                user_message {
+                                    author {
+                                        role
+                                        tool
+                                        metadata
+                                    }
+                                    content {
+                                        type
+                                        message
+                                        metadata
+                                    }
+                                    metadata
+                                }
+                            }
+                            sub_message_metadata{
+                                id
+                                delta{
+                                    delta_data_type
+                                    delta_type
+                                    delta
+                                    created_at
+                                    updated_at
+                                }
+                                processing_status{
+                                    state
+                                    reason
+                                }
+                                readout_title
+                            }
                         }
-                        processing_status{
-                            state
-                            reason
+                    }
+                    author {
+                        role
+                        tool
+                        metadata
+                    }
+                    content {
+                        type
+                        message
+                        metadata
+                    }
+                    thread_metadata {
+                        id
+                        topic
+                        users {
+                            user_id
+                            name
+                            email
+                            chat_role
                         }
-                        readout_title
-                        }
-                    }
-                    }
-                    author{
-                    role
-                    tool
-                    metadata
-                    }
-                    thread_metadata{
-                    id
-                    topic
-                    users{
-                        user_id
-                        name
-                        email
-                        chat_role
-                    }
-                    agent
-                    created_at
-                    access_scope
-                    is_pinned_chat
-                            is_closed_chat
-                    is_chat_processed
+                        agent
+                        created_at
+                        access_scope
+                        is_pinned_chat
+                        is_closed_chat
+                        is_chat_processed
                     }
                 }
-                }
+            }
         '''
 
     def send_message_mutation_v1(self, **kwargs):
@@ -287,6 +307,12 @@ class AppsyncSchemaClient:
                     event_type
                     id
                     created_at
+                    user_id
+                    content {
+                        message
+                        metadata
+                        type
+                    }
                     event_metadata{
                         event_message
                         event_data{
@@ -298,29 +324,42 @@ class AppsyncSchemaClient:
                             created_at
                             recepient
                             message_metadata{
-                            focus
-                            sources
-                            processing_status{
-                                state
-                                reason
-                            }
-                            message_intent
-                            answer_version_number
+                                focus
+                                sources
+                                processing_status{
+                                    state
+                                    reason
+                                }
+                                message_intent
+                                answer_version_number
+                                user_message {
+                                    author {
+                                        role
+                                        tool
+                                        metadata
+                                    }
+                                    content {
+                                        type
+                                        message
+                                        metadata
+                                    }
+                                    metadata
+                                }
                             }
                             sub_message_metadata{
-                            id
-                            delta{
-                                delta_data_type
-                                delta_type
-                                delta
-                                created_at
-                                updated_at
-                            }
-                            processing_status{
-                                state
-                                reason
-                            }
-                            readout_title
+                                id
+                                delta{
+                                    delta_data_type
+                                    delta_type
+                                    delta
+                                    created_at
+                                    updated_at
+                                }
+                                processing_status{
+                                    state
+                                    reason
+                                }
+                                readout_title
                             }
                         }
                     }
@@ -559,7 +598,7 @@ class AppsyncSchemaClient:
     def get_answer_data_v2(self, **kwargs):
         return '''
             query getAnswerData($utterance_id: String, $page: Int, $limit: Int) {
-                getAnswerData(utterance_id: $utterance_id, page: $page, limit: $limti){
+                getAnswerData(utterance_id: $utterance_id, page: $page, limit: $limit){
                     page
                     has_next_page
                     data
@@ -589,74 +628,88 @@ class AppsyncSchemaClient:
 
     def event_receiver_v2(self, **kwargs):
         return '''
-            subscription EventReceiver {
-                eventReceiver{
+            subscription EventReceiver($user_id: String){
+                eventReceiver(user_id: $user_id){
                     created_at
-                    event_metadata {
-                    event_data {
-                        answer_id
-                        created_at
-                        id
-                        is_visually_hidden
-                        question_id
-                        question_version_number
-                        recepient
-                        message_metadata {
-                        answer_version_number
-                        focus
-                        message_intent
-                        sources
-                        processing_status {
-                            reason
-                            state
-                        }
-                        }
-                        sub_message_metadata {
-                        answer_version_number
-                        id
-                        readout_title
-                        processing_status {
-                            reason
-                            state
-                        }
-                        delta {
-                            created_at
-                            delta
-                            delta_data_type
-                            delta_type
-                            updated_at
-                        }
-                        }
-                    }
-                    event_message
-                    }
                     event_type
                     id
                     thread_metadata {
-                    access_scope
-                    agent
-                    created_at
-                    id
-                    is_chat_processed
-                    is_closed_chat
-                    is_pinned_chat
-                    topic
-                    users {
-                        chat_role
-                        email
-                        name
-                        user_id
+                        access_scope
+                        agent
+                        created_at
+                        id
+                        is_chat_processed
+                        is_closed_chat
+                        is_pinned_chat
+                        topic
+                        users {
+                            chat_role
+                            email
+                            name
+                            user_id
+                        }
                     }
-                    }
+                    user_id
                     author {
-                    metadata
-                    role
-                    tool
+                        metadata
+                        role
+                        tool
                     }
                     content {
-                    message
-                    metadata
-                    type
+                        message
+                        metadata
+                        type
+                    }
+                    event_metadata {
+                        event_message
+                        event_data {
+                            answer_id
+                            created_at
+                            id
+                            is_visually_hidden
+                            question_id
+                            question_version_number
+                            recepient
+                            message_metadata {
+                                answer_version_number
+                                focus
+                                message_intent
+                                sources
+                                user_message {
+                                    author {
+                                        role
+                                        tool
+                                        metadata
+                                    }
+                                    content {
+                                        type
+                                        message
+                                        metadata
+                                    }
+                                    metadata
+                                }
+                                processing_status {
+                                    reason
+                                    state
+                                }
+                            }
+                            sub_message_metadata {
+                                answer_version_number
+                                id
+                                readout_title
+                                processing_status {
+                                    reason
+                                    state
+                                }
+                                delta {
+                                    created_at
+                                    delta
+                                    delta_data_type
+                                    delta_type
+                                    updated_at
+                                }
+                            }
+                        }
                     }
                 }
             }

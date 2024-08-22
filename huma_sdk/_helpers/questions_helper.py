@@ -1,3 +1,4 @@
+from typing import List
 from collections import deque
 
 class QuestionQueue:
@@ -57,3 +58,10 @@ class QuestionQueue:
         """
         self.queue.clear()
         print("The queue has been cleared.")
+
+    def push_multiple(self, questions: List[str]):
+        """
+        push list of questions into the queue.
+        """
+        for question in questions:
+            self.push(question)

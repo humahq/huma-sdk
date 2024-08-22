@@ -17,7 +17,7 @@ WHITE = "\033[97m"
 BLACK = "\033[90m"
 RESET = "\033[0m"
 
-GRAPHQL_API_URL = "https://appsync.dev.009.huma.ai/graphql"
+GRAPHQL_API_URL = "https://appsync-v2.dev.009.huma.ai/graphql"
 
 RESULTS_ROOT_DIR = "_cache/runs"
 
@@ -52,48 +52,49 @@ class CustomEventHandler(EventHandler):
         with open(self.answer_file, "w") as f:
             f.write(json.dumps(current_answers, indent=2))
 
-    ## callback functions V1
     @override
-    def on_debug_update_v1(self, message):
-        """"""
-        # print(f"{YELLOW}{message['content']}{RESET}")
+    def on_debug_update(self, delta):
+        """Callback function"""
+        # print(f"{BLUE}{delta['delta']}{RESET}")
 
     @override
-    def on_progress_update(self, message):
-        """Overriden Callback function"""
-        print(f"{YELLOW}{message['content']}{RESET}")
+    def on_progress_update(self, delta):
+        """Callback function"""
+        print(f"{YELLOW}{delta['delta']}{RESET}")
 
     @override
-    def on_follow_up_update(self, message):
-        """Overriden Callback function"""
-        print(f"{YELLOW}{message['content']}{RESET}")
-        self.collected_updates += message['content']
+    def on_follow_up_update(self, delta):
+        """Callback function"""
+        print(f"{YELLOW}{delta['delta']}{RESET}")
+        self.collected_updates += delta['delta']
 
     @override
-    def on_visual_update(self, message):
-        """Callback Function"""
-        print(f"{GREEN}{message['content']}{RESET}")
-        self.collected_updates = message['content']
+    def on_visual_update(self, delta):
+        """Callback function"""
+        print(f"{GREEN}{delta['delta']}{RESET}")
+        self.collected_updates = delta['delta']
 
     @override
-    def on_stream_update(self, message):
-        """Callback Function"""
-        print(f"{GREEN}{message['content']}{RESET}")
-        self.collected_updates += message['content']
+    def on_stream_update(self, delta):
+        """Callback function"""
+        print(f"{GREEN}{delta['delta']}{RESET}")
+        self.collected_updates += delta['delta']
 
     @override
     def on_new_question_asked(self, question):
-        """"""
+        """Callback function"""
         print(f"Asked New Question: {MAGENTA}{question}{RESET}")
 
     @override
-    def on_error_update(self, message):
-        print(f"{RED}{message['content']}{RESET}")
-        self.error = message['content']
+    def on_error_update(self, delta):
+        """Callback function"""
+        print(f"{RED}{delta['delta']}{RESET}")
+        self.error = delta['delta']
+
 
     @override
     def on_message_completion(self, message, result):
-        """Callback function called when the message is complete"""
+        """Callback function"""
         self.add_data_in_file(result)
         print(f"{CYAN}Result written to {self.answer_file}{RESET}")
 
@@ -112,12 +113,13 @@ def submit_questions(question_set, answers_location):
     questions_client = huma_sdk.session(
         service_name="Questions",
         mode="async",
-        api_version='v1',
+        api_version='v2',
         graphql_api_url=GRAPHQL_API_URL
     )
 
     with questions_client.submit_question(
         question=question_set['questions_details'],
+        topic=question_set['description'],
         agent=question_set['agent'],
         event_handler=CustomEventHandler()
     ) as stream:
@@ -130,6 +132,7 @@ def main():
         # Each dict will become single threads
         {
             "agent": "Research",
+            "description": "Nsclc Questions",
             "questions_details": [
                 {
                     "question": "suggest breast cancer and immunotherapy",
@@ -155,6 +158,7 @@ def main():
         },
         {
             "agent": "Research",
+            "description": "Nsclc Questions 2",
             "questions_details": [
                 {
                     "question":"suggest breast and precision medicine",

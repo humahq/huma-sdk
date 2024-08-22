@@ -1,10 +1,20 @@
 from types import TracebackType
 from huma_sdk._utils import parse_json_response
+from typing import Callable, Any, Dict, Optional
+from huma_sdk._helpers.questions_helper import QuestionQueue
 
 
 class EventHandler:
     def __init__(self) -> None:
         self._result = {}
+        self._stream: bool = True
+        self._result: Dict[str, Any] = {}
+        self._thread_id: Optional[str] = None
+        self._questions_queue: Optional[QuestionQueue] = None
+        self._send_message_function: Optional[Callable[[str], str]] = None
+        self._total_questions: int = 0
+        self._executed_questions: int = 0
+        self._executed_messages: list = []
 
     def _init(self, stream, result, thread_id, questions_queue, send_message_function):
         self._stream = stream
@@ -16,77 +26,74 @@ class EventHandler:
         self._executed_messages = []
         self._send_message_function = send_message_function
 
-    def update_result(self, key, value):
+    @property
+    def remaining_questions(self):
+        return bool(self._total_questions-self._executed_questions)
+
+    @property
+    def queue_size(self):
+        return self._questions_queue.size()
+
+    @property
+    def should_submit_question(self):
+        return self.queue_size == self._total_questions or self.check_final_processing()
+
+    def update_result(self, key: str, value: Any) -> None:
         if key in self._result and self._result.get(key):
             self._result[key].update(value)
         else:
             self._result[key] = value
 
-    ## V1 Callback Functions
-    def on_visual_update_v1(self, message):
-        """Callback Function"""
-
-    def on_stream_update_v1(self, message):
-        """Callback Function"""
-
-    def on_debug_update_v1(self, message):
-        """Callback Function"""
-
-    def on_progress_update_v1(self, message):
-        """Callback function"""
-
-    def on_follow_up_update_v1(self, message):
-        """Callback Function"""
-
-    def on_message_completion_v1(self, message, full_result):
-        """"""
-
-    def on_error_update_v1(self, message):
-        """"""
-
-    def on_new_question_asked_v1(self, question):
-        """"""
-
-    ## V2 Callback Functions
-    def on_visual_update_v2(self, delta):
-        """Callback Function"""
-
-    def on_stream_update_v2(self, delta):
-        """Callback Function"""
-
-    def on_debug_update_v2(self, delta):
-        """Callback Function"""
-
-    def on_progress_update_v2(self, delta):
-        """Callback function"""
+    def update_final_result(self, message_id):
+        value = { "final_status": True, "submission_status": True }
+        self.update_result(key=message_id, value=value)
 
     def check_final_processing(self):
         return all([value.get('final_status') for value in list(self._result.values())])
 
-    def submit_question(self, question):
-        message_id = self._send_message_function(question)
+    def submit_question(self, question, **kwargs):
+        if isinstance(question, dict):
+            kwargs = dict(
+                focus=question.get('focus'),
+                sources=question.get('sources')
+            )
+            question = question.get('question')
+
+        message_id = self._send_message_function(question, **kwargs)
         result = { "question": question, "final_status": False, "submission_status": True }
-        self.on_new_question_asked_v1(question)
+        self.on_new_question_asked(question)
         self.update_result(message_id, value=result)
 
     def submit_question_from_queue(self):
-        if not self._executed_questions and not self._result:
+        if self.should_submit_question:
             question = self._questions_queue.pop()
-            if question:
-                self.submit_question(question)
+            self.submit_question(question)
 
-        elif self.check_final_processing():
-            question = self._questions_queue.pop()
-            if question:
-                self.submit_question(question)
+    def on_visual_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for visual updates."""
 
+    def on_stream_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for stream updates."""
 
-    def until_done(self):
-        while self._stream:
-            self.submit_question_from_queue()
-            ...
+    def on_debug_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for debug updates."""
 
-    def check_closing_condition(self, message):
+    def on_progress_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for progress updates."""
+
+    def on_follow_up_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for follow-up updates."""
+
+    def on_message_completion(self, message: Dict[str, Any], full_result: Any) -> None:
+        """Callback Function when a message is completed."""
+
+    def on_error_update(self, message: Dict[str, Any]) -> None:
+        """Callback Function for error updates."""
+
+    def on_new_question_asked(self, question: str) -> None:
+        """Callback Function when a new question is asked."""
+
+    def check_closing_condition_v1(self, message):
         is_message_completed = False
         if message.get("contentType") == "system" and message.get("contentsubType") in ["system", "blocking"]:
             message_content_json = parse_json_response(message.get("content"))
@@ -99,67 +106,86 @@ class EventHandler:
 
         return is_message_completed
 
-    def check_closing_condition_v2(self, message):
-        is_chat_processed = False
-        if message["author"]['role'] == "system_manager":
-            is_chat_processed = message['event_metadata']['event_data']['message_metadata']['processing_status']['state'] in ["done", "failure"]
-
-        return is_chat_processed
-
-    def handle_final_operations(self, message):
-        is_message_completed = self.check_closing_condition(message)
+    def handle_final_operations_v1(self, message):
+        is_message_completed = self.check_closing_condition_v1(message)
         if is_message_completed:
-            value = { "final_status": True, "submission_status": True }
-            self.update_result(key=message['messageId'], value=value)
+            self.update_final_result(message_id=message['messageId'])
+            self.on_message_completion(message, self._result.get(message['messageId']))
 
-            self.on_message_completion_v1(message, self._result.get(message['messageId']))
-            is_chat_processed = self._executed_questions == self._total_questions
-            if is_chat_processed:
-                self._stream = False
+    def handle_final_operations_v2(self, message):
+        if message["event_type"] in ["thread_message_done", "thread_message_failure"]:
+            self._executed_questions += 1
+            message_id = message['event_metadata']['event_data']['id']
+            self.update_final_result(message_id=message_id)
+            self.on_message_completion(message, self._result.get(message_id))
 
-            return is_chat_processed
-
-    def _emit_subscription_event(self, message):
+    def handle_v1_event(self, message):
         if message['contentType'] == "stream":
-            self.on_stream_update_v1(message)
+            self.on_stream_update(message)
 
         elif message['contentsubType'] == "status":
-            self.on_progress_update_v1(message)
+            self.on_progress_update(message)
 
         elif message['contentsubType'] == "debug":
-            self.on_debug_update_v1(message)
+            self.on_debug_update(message)
 
         elif message['contentType'] == "analyzer" and message['debug_and_status_state'] == "complete":
-            self.on_visual_update_v1(message)
+            self.on_visual_update(message)
 
         elif message['contentType'] == "follow_up" and message['debug_and_status_state'] == "complete":
-            self.on_follow_up_update_v1(message)
+            self.on_follow_up_update(message)
 
         elif message['contentType'] == "error":
             message['content'] = parse_json_response(message['content'])
-            self.on_error_update_v1(message)
+            self.on_error_update(message)
 
-        is_chat_processed = self.handle_final_operations(message)
-        return is_chat_processed
-
-    def _emit_subscription_event_v2(self, message):
-
+    def handle_v2_event(self, message):
         if message['author']['role'] == "streaming_assistant":
-            self.on_stream_update_v2(message['event_metadata']['event_data']['sub_message_metadata']['delta'])
+            delta = message['event_metadata']['event_data']['sub_message_metadata']['delta']
+            if delta['delta_type'] == "replace":
+                self.on_follow_up_update(delta)
+            elif delta['delta_type'] == "add":
+                self.on_stream_update(delta)
 
         elif message['author']['role'] == "progress_assistant":
             delta = message['event_metadata']['event_data']['sub_message_metadata']['delta']
-            if delta['delta_type'] in ["status", "step_status"]:
-                self.on_progress_update_v2(delta)
-            elif delta['delta_type'] == "log_info":
-                self.on_debug_update_v2(delta)
+            if delta['delta_type'] == "step_status":
+                actual_delta = parse_json_response(delta['delta'])
+                delta['delta'] = actual_delta.get('title') if isinstance(actual_delta, dict) else actual_delta
+                self.on_progress_update(delta)
+            elif delta['delta_type'] == "status":
+                self.on_progress_update(delta)
+            elif delta['delta_type'] in ["log_info", "log_error", "log_warning", "log_debug"]:
+                self.on_debug_update(delta)
 
         elif message['author']['role'] == "visual_assistant":
             visual = message['event_metadata']['event_data']['sub_message_metadata']['delta']
-            self.on_visual_update_v2(visual)
+            self.on_visual_update(visual)
 
-        is_chat_processed = self.check_closing_condition_v2(message)
-        return is_chat_processed
+        elif message['event_type'] == "thread_message_failure":
+            delta = message['event_metadata']['event_data']['sub_message_metadata']['delta']
+            self.on_error_update(delta)
+
+    def _emit_subscription_event(self, message, api_version):
+        if api_version == "v1":
+            self.handle_v1_event(message)
+            self.handle_final_operations_v1(message)
+
+        elif api_version == "v2":
+            message_id = message['event_metadata']['event_data']['id']
+            if message_id in self._result.keys():
+                self.handle_v2_event(message)
+                self.handle_final_operations_v2(message)
+
+        if not self.remaining_questions:
+            self._stream = False
+
+        return not self.remaining_questions
+
+    def until_done(self):
+        while self._stream:
+            if self.queue_size:
+                self.submit_question_from_queue()
 
 
 class ThreadEventManager:
@@ -187,4 +213,4 @@ class ThreadEventManager:
         exc: BaseException | None,
         exc_tb: TracebackType | None
     ) -> None:
-        self.__stream = False
+        self.__event_handler._stream = False
