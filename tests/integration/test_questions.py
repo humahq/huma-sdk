@@ -2,13 +2,19 @@ import unittest
 import huma_sdk
 import os
 from bson import ObjectId
-import time
+import time, random
+
+QUESTIONS_SET = [
+    "Top Sponsors in NSCLC",
+    "Top Sponsors In active, phase 3 NSCLC",
+    "Active phase 3 NSCLC trials from GSK"
+]
 
 
 class TestQuestionsClientIntegration(unittest.TestCase):
 
     def setUp(self):
-        self.question = "Planned patient enrollment for pediatric ewing's sarcoma trials"
+        self.question = random.choice(QUESTIONS_SET)
         self.commands = []
         self.page, self.limit = 1, 20
         self.expected_questions_status = ("succeeded", "processing", "accepted", "rejected")
