@@ -55,7 +55,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
         page, limit = 1, 20
         while True:
-            result = histories_client.fetch_history(page=page, limit=limit, sort_by="created_data", order_by=-1, question="")
+            result = histories_client.fetch_history(page=page, limit=limit, order_by="created_date", sort_by=-1, question="")
             if not isinstance(result, dict) or not result.get('histories'):
                 return []
             for history in result['histories']:
@@ -74,7 +74,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
     def get_favorites(self):
         page, limit, favorites_list = 1, 20, []
         while True:
-            result = self.favorites_client.fetch_favorites(page=page, limit=limit, sort_by="created_data", order_by=-1, question="")
+            result = self.favorites_client.fetch_favorites(page=page, limit=limit, order_by="created_date", sort_by=-1, question="")
             if not isinstance(result, dict) or not result.get('favorites'):
                 result = {}
                 break
@@ -92,7 +92,7 @@ class TestFavoritesClientIntegration(unittest.TestCase):
         page, max_page_count = 1, 5
         limit, favorites_list = 20, []
         while True:
-            result = self.favorites_client.fetch_favorites(page=page, limit=limit, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=max_page_count)
+            result = self.favorites_client.fetch_favorites(page=page, limit=limit, order_by="created_date", sort_by=-1, question="", is_batch_pages=True, max_page_count=max_page_count)
             if not isinstance(result, dict) or not result.get('favorites'):
                 result = {}
                 break

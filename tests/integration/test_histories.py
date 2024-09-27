@@ -78,9 +78,9 @@ class TestHistoriesClientIntegration(unittest.TestCase):
         histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
 
         if is_batch_pages:
-            result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="")
+            result = histories_client.fetch_history(page=1, limit=20, order_by="created_date", sort_by=-1, question="")
         else:
-            result = histories_client.fetch_history(page=1, limit=20, sort_by="created_data", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+            result = histories_client.fetch_history(page=1, limit=20, order_by="created_date", sort_by=-1, question="", is_batch_pages=True, max_page_count=5)
 
         if not isinstance(result, dict) or not result.get('histories'):
             return []

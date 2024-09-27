@@ -61,7 +61,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         histories_client = huma_sdk.session(service_name="Histories", api_url=os.environ.get('API_URL'), api_secret_key=os.environ.get('API_SECRET_KEY'))
         page, limit = 1, 20
         while True:
-            result = histories_client.fetch_history(page=page, limit=limit, sort_by="created_data", order_by=-1, question="")
+            result = histories_client.fetch_history(page=page, limit=limit, sort_by=-1, order_by="created_date", question="")
             if not isinstance(result, dict) or not result.get('histories'):
                 return []
             for history in result['histories']:
@@ -78,7 +78,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
         return result
 
     def fetch_subscriptions(self):
-        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, sort_by="created_date", order_by=-1, question="")
+        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, order_by="created_date", sort_by=-1, question="")
         if not result.get('subscriptions'):
             result = self.handle_empty_subscription()
             if not result:
@@ -91,7 +91,7 @@ class TestSubscriptionsClientIntegration(unittest.TestCase):
             return result
 
     def fetch_aggregated_subscriptions(self):
-        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, sort_by="created_date", order_by=-1, question="", is_batch_pages=True, max_page_count=5)
+        result = self.subscriptions_client.fetch_subscriptions(page=1, limit=20, order_by="created_date", sort_by=-1, question="", is_batch_pages=True, max_page_count=5)
         if not result.get('subscriptions'):
             result = self.handle_empty_subscription()
             if not result:
