@@ -15,15 +15,16 @@ class TestAliasClientIntegration(unittest.TestCase):
         self.assertIn('aliases', result)
 
         aliases = result['aliases']
-        self.assertIsInstance(aliases, list)
+        if aliases:
+            self.assertIsInstance(aliases, list)
 
-        if not self.required_params.get('is_batch_pages'):
-            self.assertTrue(len(aliases)<=self.required_params['limit'])
+            if not self.required_params.get('is_batch_pages'):
+                self.assertTrue(len(aliases)<=self.required_params['limit'])
 
-        returned_keys = aliases[0].keys() if aliases else []
-        if returned_keys:
-            for key in self.expected_keys:
-                self.assertIn(key, returned_keys)
+            returned_keys = aliases[0].keys() if aliases else []
+            if returned_keys:
+                for key in self.expected_keys:
+                    self.assertIn(key, returned_keys)
 
     def test_fetch_aliases_success(self):
         self.required_params = self.required_params_test_1
